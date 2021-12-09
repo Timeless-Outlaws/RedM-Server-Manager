@@ -1,8 +1,10 @@
+name: CI
+
 on:
   push:
 
 jobs:
-  docker:
+  build:
     runs-on: ubuntu-latest
     steps:
       - 
@@ -17,3 +19,15 @@ jobs:
       - 
         name: Check
         run: ./bin/run
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - 
+        name: Clone repository
+        uses: actions/checkout@v2
+      -
+        name: Install dependencies
+        run: npm install
+      -
+        name: Test
+        run: npm run test
