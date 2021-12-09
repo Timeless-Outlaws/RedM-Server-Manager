@@ -1,7 +1,7 @@
 {
   "name": "redm-server-manager",
   "description": "Manager for the dockerized RedM server.",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "author": "Patrick Henninger",
   "bin": {
     "rsm": "./bin/run"
