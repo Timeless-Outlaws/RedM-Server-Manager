@@ -1,0 +1,29 @@
+name: Publish
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - 
+        name: Clone repository
+        uses: actions/checkout@v2
+      -
+        name: Install dependencies
+        run: npm install
+      -
+        name: Build
+        run: npx oclif pack
+      -
+        name: Pack Tarballs
+        run: npx oclif pack:tarballs
+      - 
+        name: Publish
+        uses: softprops/action-gh-release@v1
+        with:
+          files: "dist/*"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
