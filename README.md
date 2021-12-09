@@ -29,7 +29,43 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
+* [`rsm build-info [TYPE] [URL]`](#rsm-build-info-type-url)
+* [`rsm extract-sql [RESOURCESDIRECTORY]`](#rsm-extract-sql-resourcesdirectory)
 * [`rsm help [COMMAND]`](#rsm-help-command)
+
+## `rsm build-info [TYPE] [URL]`
+
+Fetches information about the latest build from the fivem build server.
+
+```
+USAGE
+  $ rsm build-info [TYPE] [URL]
+
+DESCRIPTION
+  Fetches information about the latest build from the fivem build server.
+
+EXAMPLES
+  $ rsm build-info latest http://runtime.fivem.net/artifacts/fivem/build_proot_linux/master
+```
+
+_See code: [src/commands/build-info/index.ts](https://github.com/bumbummen99/RedM/blob/v0.0.0/src/commands/build-info/index.ts)_
+
+## `rsm extract-sql [RESOURCESDIRECTORY]`
+
+describe the command here
+
+```
+USAGE
+  $ rsm extract-sql [RESOURCESDIRECTORY]
+
+DESCRIPTION
+  describe the command here
+
+EXAMPLES
+  $ rsm extract-sql ./resources
+```
+
+_See code: [src/commands/extract-sql/index.ts](https://github.com/bumbummen99/RedM/blob/v0.0.0/src/commands/extract-sql/index.ts)_
 
 ## `rsm help [COMMAND]`
 
@@ -49,5 +85,5 @@ DESCRIPTION
   Display help for rsm.
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.1.3/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.1.10/src/commands/help.ts)_
 <!-- commandsstop -->
