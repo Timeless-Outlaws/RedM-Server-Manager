@@ -1,7 +1,7 @@
 import {resolve} from 'node:path'
 import {writeFile, rmdir, readdir} from 'node:fs/promises'
 import {Dirent, existsSync} from 'node:fs'
-import {Repository, Clone} from 'nodegit'
+import simpleGit, {SimpleGit, ConfigGetResult} from 'simple-git'
 import fetch from 'node-fetch'
 import {Extract as exractTar} from 'tar'
 import {Resource} from './resource'
@@ -111,7 +111,7 @@ export default class ResourceManager {
     /* Not a resource, process sub-directories */
 
     /* Get all subdirectories of the directory */
-    const subdirectories: string[] = await ResourceManager._getSubDirectories(path)
+    let subdirectories: string[] = await ResourceManager._getSubDirectories(path)
 
     /* Capture promises for parallel execution */
     const promises: Promise<number>[] = []
@@ -122,13 +122,21 @@ export default class ResourceManager {
     }
 
     /* Wait for promises to finish and sum the results as the amount of removed resources */
-    const removed = (await Promise.all(promises)).reduce((deleted: number, add: number) => deleted + add, 0)
+    const removed = await (async (): Promise<number> => {
+      const results = await Promise.all(promises)
+      return results.reduce((deleted: number, add: number) => deleted + add, 0)
+    })()
 
     /* Check if we are still at root, we are not allowed to delete the root */
-    if (path !== this._resourcesDirectory && /* Check if the directory has any subdirectories now */
-        (await ResourceManager._getSubDirectories(path)).length === 0) {
+    if (path !== this._resourcesDirectory) {
+      /* Update the subdirectories */
+      subdirectories = await ResourceManager._getSubDirectories(path)
+
+      /* Check if the directory has any subdirectories now */
+      if  (subdirectories.length === 0) {
       /* Remove the directory in case it does not contain any module and is not a module itself */
-      await rmdir(path)
+        await rmdir(path)
+      }
     }
 
     return removed
@@ -167,8 +175,11 @@ export default class ResourceManager {
     if (existsSync(path)) {
       /* Make sure it is a git repository */
       if (!existsSync(resolve(path, '.git'))) {
-        /* Check if the folder is empty */
-        if ((await readdir(path)).length > 0) {
+        /* Get the contents of the directory */
+        const directoryContents: string[] = await readdir(path)
+
+        /* Check if the directory is empty */
+        if (directoryContents.length > 0) {
           /* Not empty and not a git, this is an error */
           throw new Error(`Configured resource path is polluted with non-git files at "${resource.path}".`)
         } else {
@@ -178,19 +189,22 @@ export default class ResourceManager {
       }
 
       /* Open the repository */
-      let repository: Repository = await Repository.open(path)
+      const repository: SimpleGit = await simpleGit(path)
+
+      /* Get the origin remote url */
+      const url: ConfigGetResult = await repository.getConfig('remote.origin.url', 'local')
 
       /* Make sure it is the correct origin */
-      if ((await repository.getRemote('origin')).url() !== resource.repository) {
+      if (url.value !== resource.repository) {
         /* Remove the repository */
         await rmdir(path)
 
         /* Clone the correct repository */
-        repository = await Clone.clone(resource.repository, resource.path)
+        await (simpleGit(path).clone(resource.repository, path))
       }
     } else {
       /* Clone the repository */
-      await Clone.clone(resource.repository, resource.path)
+      await (simpleGit(path).clone(resource.repository, path))
     }
   }
 
@@ -208,7 +222,8 @@ export default class ResourceManager {
   }
 
   static async _getSubDirectories(path: string): Promise<string[]> {
-    return (await readdir(path, {withFileTypes: true})).filter((dirent: Dirent) => dirent.isDirectory()).map((dirent: Dirent) => dirent.name)
+    const subdirectories = await readdir(path, {withFileTypes: true})
+    return subdirectories.filter((dirent: Dirent) => dirent.isDirectory()).map((dirent: Dirent) => dirent.name)
   }
 
   static _extractTarball(tarball: NodeJS.ReadableStream, path: string): Promise<void> {

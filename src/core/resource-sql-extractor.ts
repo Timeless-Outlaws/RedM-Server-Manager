@@ -21,18 +21,19 @@ export default class ResourceSQLExtractor {
       /* Check if the directory is a resource root */
       if (existsSync(resolve(directory, 'fxmanifest.lua')) || existsSync(resolve(directory, '__resource.lua'))) {
         /* Process all .sql files in the root of the resource */
-        for (const sqlFile of (await readdir(directory)).filter(path => path.split('.').pop() === 'sql')) {
+        const directories: string[] = await readdir(directory)
+        for (const sqlFile of directories.filter(path => path.split('.').pop() === 'sql')) {
           this.extractSQL(sqlFile)
         }
       } else {
         /* Get all subdirectories of the directory */
-        const subdirectories: string[] = (await readdir(directory, {withFileTypes: true})).filter((dirent: Dirent) => dirent.isDirectory()).map((dirent: Dirent) => dirent.name)
+        const subdirectories: Dirent[] = await readdir(directory, {withFileTypes: true})
 
         /* Initialize empty promises array to wait for all subdirectories to finish in parallel */
         const promises: PromiseLike<void>[] = []
 
         /* Process all subDirectories if this is not a resource root */
-        for (const subDirectory of subdirectories) {
+        for (const subDirectory of subdirectories.filter((dirent: Dirent) => dirent.isDirectory()).map((dirent: Dirent) => dirent.name)) {
           promises.push(this.extract(subDirectory))
         }
 
@@ -46,7 +47,8 @@ export default class ResourceSQLExtractor {
     /* Make sure the file does exist first */
     if (existsSync(file)) {
       /* Get the files contents */
-      let sql: string = (await readFile(file)).toString()
+      const content: Buffer = await readFile(file)
+      let sql: string = content.toString()
 
       /* Check if the SQL does define the used database */
       if (!sql.includes('USE')) {
