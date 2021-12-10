@@ -33,15 +33,20 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
+      -
+        name: Install Dependencies for Ubuntu
+        # git >= 2.18 required for actions/checkout git support
+        run: |
+          sudo apt update
+          sudo apt install -y software-properties-common
+          sudo add-apt-repository -y ppa:git-core/ppa
+          sudo apt update
+          sudo apt install -y git build-essential clang python3 libssl-dev libkrb5-dev libc++-dev
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       - 
         name: Clone repository
         uses: actions/checkout@v2
-      -
-        name: Install dependencies
-        run: |
-          sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
-          sudo apt-get update
-          sudo apt-get install -y libstdc++-4.9-dev
       -
         name: Install dependencies
         run: npm install
