@@ -27,7 +27,7 @@ jobs:
         run: npm install
       -
         name: Build
-        run: npx oclif pack
+        run: npm run build
       -
         name: Pack Tarballs
         run: npx oclif pack:tarballs
