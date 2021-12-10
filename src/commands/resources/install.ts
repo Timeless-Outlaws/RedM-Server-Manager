@@ -1,20 +1,27 @@
-import {Command} from '@oclif/command'
+import {Command, flags} from '@oclif/command'
+import ResourceManager from '../../core/resources/ResourceManager'
 
 export default class ResourcesInstall extends Command {
   static description = 'Installs the resources as defined in resources.json or adds new resource'
 
   static examples = [
-    `$ rsm extract-sql ./resources`,
+    `$ rsm resources install`,
   ]
 
-  static args = [
-    {name: 'resourcesDirectory'},
-  ]
+  static flags = {
+    // can pass either --force or -f
+    definition: flags.string({char: 'd'}),
+    directory: flags.string({char: 'o'}),
+  }
 
   async run(): Promise<void> {
     /* Get the arguments */
-    const {args} = this.parse(ResourcesInstall)
+    const {flags} = this.parse(ResourcesInstall)
 
-    this.log('Not yet implemented :(')
+    /* Initialize the manager */
+    const manager = new ResourceManager(flags.definition, flags.directory)
+
+    /* Intall resources as defined */
+    await manager.install()
   }
 }
