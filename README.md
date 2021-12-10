@@ -20,7 +20,7 @@ $ npm install -g redm-server-manager
 $ rsm COMMAND
 running command...
 $ rsm (--version)
-redm-server-manager/0.0.2 linux-x64 node-v14.16.0
+redm-server-manager/0.0.3 linux-x64 node-v14.16.0
 $ rsm --help [COMMAND]
 USAGE
   $ rsm COMMAND
@@ -32,6 +32,7 @@ USAGE
 * [`rsm build-info [TYPE] [URL]`](#rsm-build-info-type-url)
 * [`rsm extract-sql [RESOURCESDIRECTORY]`](#rsm-extract-sql-resourcesdirectory)
 * [`rsm help [COMMAND]`](#rsm-help-command)
+* [`rsm resources install [RESOURCESDIRECTORY]`](#rsm-resources-install-resourcesdirectory)
 
 ## `rsm build-info [TYPE] [URL]`
 
@@ -48,7 +49,7 @@ EXAMPLES
   $ rsm build-info latest http://runtime.fivem.net/artifacts/fivem/build_proot_linux/master
 ```
 
-_See code: [src/commands/build-info/index.ts](https://github.com/bumbummen99/RedM/blob/v0.0.2/src/commands/build-info/index.ts)_
+_See code: [src/commands/build-info.ts](https://github.com/bumbummen99/RedM/blob/v0.0.3/src/commands/build-info.ts)_
 
 ## `rsm extract-sql [RESOURCESDIRECTORY]`
 
@@ -65,7 +66,7 @@ EXAMPLES
   $ rsm extract-sql ./resources
 ```
 
-_See code: [src/commands/extract-sql/index.ts](https://github.com/bumbummen99/RedM/blob/v0.0.2/src/commands/extract-sql/index.ts)_
+_See code: [src/commands/extract-sql.ts](https://github.com/bumbummen99/RedM/blob/v0.0.3/src/commands/extract-sql.ts)_
 
 ## `rsm help [COMMAND]`
 
@@ -86,4 +87,19 @@ DESCRIPTION
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.1.10/src/commands/help.ts)_
+
+## `rsm resources install [RESOURCESDIRECTORY]`
+
+Installs the resources as defined in resources.json or adds new resource
+
+```
+USAGE
+  $ rsm resources install [RESOURCESDIRECTORY]
+
+DESCRIPTION
+  Installs the resources as defined in resources.json or adds new resource
+
+EXAMPLES
+  $ rsm extract-sql ./resources
+```
 <!-- commandsstop -->
