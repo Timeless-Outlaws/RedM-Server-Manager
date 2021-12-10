@@ -49,7 +49,7 @@ EXAMPLES
   $ rsm build-info latest http://runtime.fivem.net/artifacts/fivem/build_proot_linux/master
 ```
 
-_See code: [lib/commands/build-info.js](https://github.com/bumbummen99/RedM/blob/v0.0.6/lib/commands/build-info.js)_
+_See code: [src/commands/build-info.js](https://github.com/bumbummen99/RedM/blob/v0.0.6/src/commands/build-info.js)_
 
 ## `rsm extract-sql [RESOURCESDIRECTORY]`
 
@@ -66,7 +66,7 @@ EXAMPLES
   $ rsm extract-sql ./resources
 ```
 
-_See code: [lib/commands/extract-sql.js](https://github.com/bumbummen99/RedM/blob/v0.0.6/lib/commands/extract-sql.js)_
+_See code: [src/commands/extract-sql.js](https://github.com/bumbummen99/RedM/blob/v0.0.6/src/commands/extract-sql.js)_
 
 ## `rsm help [COMMAND]`
 
