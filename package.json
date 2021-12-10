@@ -10,7 +10,9 @@
   "dependencies": {
     "@oclif/command": "^1.8.11",
     "@oclif/core": "^1",
-    "@oclif/plugin-help": "^5"
+    "@oclif/plugin-help": "^5",
+    "nodegit": "^0.27.0",
+    "tar": "^4.4.19"
   },
   "devDependencies": {
     "@oclif/test": "^2",
@@ -19,6 +21,8 @@
     "@types/mocha": "^9.0.0",
     "@types/node": "^16.11.12",
     "@types/node-fetch": "^2.5.12",
+    "@types/nodegit": "^0.27.6",
+    "@types/tar": "^6.1.1",
     "chai": "^4",
     "eslint": "^7.32.0",
     "eslint-config-oclif": "^4",

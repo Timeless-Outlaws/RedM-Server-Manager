@@ -3,6 +3,9 @@ import { writeFile, rmdir, readdir } from "fs/promises"
 import { Resource } from "./Resource"
 import { Dirent, existsSync } from "fs"
 import { Definition } from "./Definition"
+import { Repository, Clone } from 'nodegit'
+import fetch from 'node-fetch'
+import { Extract } from 'tar'
 
 export default class ResourceManager {
 
@@ -130,12 +133,63 @@ export default class ResourceManager {
     }
   }
 
-  async installTarball(resource: Resource): Promise<string> {
-    return ''
+  async installTarball(resource: Resource): Promise<void> {
+    if (! resource.url) {
+      throw new Error('Resources of type tarball must define a url property.')
+    }
+
+    /* Resolve the resources path */
+    const path: string = resolve(this._resourcesDirectory, resource.path)
+
+    /* Check if the resource directory does already exist */
+    if (existsSync(path)) {
+      /* Remove it */
+      rmdir(path)
+    }
+
+    /* Download the latest tarball */
+    const response = await fetch(resource.url)
+
+    /* Extract the tarball */
+    await ResourceManager._extractTarball(response.body, path)
   }
 
-  async installGit(resource: Resource): Promise<string> {
-    return ''
+  async installGit(resource: Resource): Promise<void> {
+    if (! resource.repository) {
+      throw new Error('Git resources must define a repository property.')
+    }
+    /* Resolve the resources path */
+    const path = resolve(this._resourcesDirectory, resource.path)
+
+    /* Check if the resource directory does already exist */
+    if (existsSync(path)) {
+      /* Make sure it is a git repository */
+      if (! existsSync(resolve(path, '.git'))) {
+        /* Check if the folder is empty */
+        if ( ( await readdir(path) ).length ) {
+          /* Not empty and not a git, this is an error */
+          throw new Error('Configured resource path is polluted with non-git files at "${resource.path}".')
+        } else {
+          /* Remove empty directories */
+          await rmdir(path)
+        }
+      }
+
+      /* Open the repository */
+      let repository: Repository = await Repository.open(path)
+
+      /* Make sure it is the correct origin */
+      if ( (await repository.getRemote('origin')).url() !== resource.repository ) {
+        /* Remove the repository */
+        await rmdir(path)
+
+        /* Clone the correct repository */
+        repository = await Clone.clone(resource.repository, resource.path)
+      }
+    } else {
+      /* Clone the repository */
+      await Clone.clone(resource.repository, resource.path)
+    }
   }
   
   /**
@@ -151,5 +205,16 @@ export default class ResourceManager {
 
   static async _getSubDirectories(path: string): Promise<string[]> {
     return ( await readdir(path, { withFileTypes: true }) ).filter((dirent: Dirent) => dirent.isDirectory()).map((dirent: Dirent) => dirent.name)
+  }
+
+  static _extractTarball(tarball: NodeJS.ReadableStream, path: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      tarball.on('end', resolve)
+      tarball.on('error', reject)
+
+      tarball.pipe(Extract({
+        C: path
+      }))
+    })    
   }
 }
