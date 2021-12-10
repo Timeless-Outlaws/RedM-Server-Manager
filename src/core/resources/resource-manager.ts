@@ -1,14 +1,13 @@
-import { resolve } from "path"
-import { writeFile, rmdir, readdir } from "fs/promises"
-import { Resource } from "./Resource"
-import { Dirent, existsSync } from "fs"
-import { Definition } from "./Definition"
-import { Repository, Clone } from 'nodegit'
+import {resolve} from 'node:path'
+import {writeFile, rmdir, readdir} from 'node:fs/promises'
+import {Dirent, existsSync} from 'node:fs'
+import {Repository, Clone} from 'nodegit'
 import fetch from 'node-fetch'
-import { Extract } from 'tar'
+import {Extract as exractTar} from 'tar'
+import {Resource} from './resource'
+import {Definition} from './definition'
 
 export default class ResourceManager {
-
   _definitionFile: string
 
   _definition: Definition
@@ -16,75 +15,81 @@ export default class ResourceManager {
   _resourcesDirectory: string
 
   constructor(definitionDirectory: string = resolve(process.cwd(), 'resources.json'), resourcesDirectory: string = resolve(process.cwd(), 'resources')) {
-    this._definitionFile =resolve(definitionDirectory, 'resources.json')
+    this._definitionFile = resolve(definitionDirectory, 'resources.json')
     this._definition = JSON.parse(this._definitionFile)
     this._resourcesDirectory = resolve(resourcesDirectory)
   }
 
   /**
    * Installs resources from the current definitions
+   *
+   * @return {Promise<void>} Will resolve once all resources are installed and the directory is cleaned
    */
   async install(): Promise<string> {
     /* Keep track of resource actions */
-    let installed: number = 0
-    let updated: number   = 0
-    let removed: number   = 0
+    const install: Promise<void>[] = []
+    const update: Promise<void>[]  = []
+    let removed          = 0
 
     /* Get resources from the definition */
     const resources: Resource[]|undefined = this._definition.resources
 
     /* Check if there are any resources definitions */
-    if (resources && resources.length) {
+    if (resources && resources.length > 0) {
       /* Install every listed resource */
       for (const resource of resources) {
         /* Check if we should update or install based on if the resource already exists */
-        if ( ( resource.type && ['tarball'].includes(resource.type)) || ! existsSync(resolve(this._resourcesDirectory, resource.path))) {
+        if ((resource.type && ['tarball'].includes(resource.type)) || !existsSync(resolve(this._resourcesDirectory, resource.path))) {
           /* Check what kind of resource definition we have and use the correct installer */
           switch (resource.type) {
-            case 'tarball':
-              await this.installTarball(resource)
-            default:
-              await this.installGit(resource)
+          case 'tarball':
+            install.push(this.installTarball(resource))
+            break
+          default:
+            install.push(this.installGit(resource))
           }
-
-          /* Increment the amount of newly installed resources */
-          installed++
         } else {
           /* Check what kind of resource definition we have and use the correct installer */
           switch (resource.type) {
-            default:
-              await this.installGit(resource)
+          default:
+            update.push(this.installGit(resource))
           }
-
-          /* Increment the amount of updated resources */
-          updated++
         }
       }
     }
 
+    /* Wait for install & update to finish */
+    await Promise.all([
+      Promise.all(install),
+      Promise.all(update),
+    ])
+
     /* Remove all resources that are not explicitly installed */
     removed = await this.clean(this._resourcesDirectory, resources)
-    
+
     /* Determine if any actions were performed */
-    if (installed || updated || removed) {
-      return `Successfully installed ${installed}, updated ${updated} and removed ${removed} resources!`
-    } else {
-      return 'No changes required, everything is up to date.'
+    if (install.length > 0 || update.length > 0 || removed) {
+      return `Successfully installed ${install.length}, updated ${update.length} and removed ${removed} resources!`
     }
+
+    return 'No changes required, everything is up to date.'
   }
 
-  async clean(path: string = this._resourcesDirectory, resources: Resource[]|undefined): Promise<number> {
+  async clean(path?: string, resources?: Resource[]): Promise<number> {
+    /* Resolve the path if not set */
+    path = path || this._resourcesDirectory
+
     /* Resolve resources from the definition if not set */
     resources = resources || this._definition.resources || []
 
     /* Check if this directory is a resource */
-    let isManifestOutdated = existsSync(resolve(path, 'fxmanifest.lua')) // Determine if the manifest is out of date
-    let isResource: Boolean = isManifestOutdated || existsSync(resolve(path, 'fxmanifest.lua'))
+    const isManifestOutdated = existsSync(resolve(path, 'fxmanifest.lua')) // Determine if the manifest is out of date
+    const isResource: boolean = isManifestOutdated || existsSync(resolve(path, 'fxmanifest.lua'))
 
     /* Directory is a resource */
     if (isResource) {
       /* Find the resource in the definition by its path */
-      const resource: Resource|undefined = resources ? resources.filter(resource => path === resolve(this._resourcesDirectory, resource.path)).shift() : undefined
+      const resource: Resource|undefined = resources ? resources.find(resource => path === resolve(this._resourcesDirectory, resource.path)) : undefined
 
       /* Check if the resource is in the definition */
       if (resource) {
@@ -95,46 +100,42 @@ export default class ResourceManager {
 
         /* Notify that no resource has been removed as this path is valid */
         return 0
-      } else {
-        /* Remove the resource as it is missing from the definition */
-        await rmdir(path)
-
-        /* Notify that one resource has been removed */
-        return 1
       }
+
+      /* Remove the resource as it is missing from the definition */
+      await rmdir(path)
+
+      /* Notify that one resource has been removed */
+      return 1
     }
     /* Not a resource, process sub-directories */
-    else {
-      /* Get all subdirectories of the directory */
-      const subdirectories: string[] = await ResourceManager._getSubDirectories(path)
 
-      /* Capture promises for parallel execution */
-      const promises: Promise<number>[]= []
+    /* Get all subdirectories of the directory */
+    const subdirectories: string[] = await ResourceManager._getSubDirectories(path)
 
-      /* Process all subdirectories as possible resource */
-      for (const subdirectory of subdirectories) {
-        promises.push(this.clean(subdirectory, resources))
-      }
+    /* Capture promises for parallel execution */
+    const promises: Promise<number>[] = []
 
-      /* Wait for promises to finish and sum the results as the amount of removed resources*/
-      const removed = ( await Promise.all(promises) ).reduce((deleted: number, add: number) => deleted + add, 0)
-
-      /* Check if we are still at root, we are not allowed to delete the root */
-      if (path !== this._resourcesDirectory) {
-        /* Check if the directory has any subdirectories now */
-        if (! ( await ResourceManager._getSubDirectories(path)).length) {
-          /* Remove the directory in case it does not contain any module and is not a module itself */
-          await rmdir(path)
-        }
-      }
-      
-
-      return removed
+    /* Process all subdirectories as possible resource */
+    for (const subdirectory of subdirectories) {
+      promises.push(this.clean(subdirectory, resources))
     }
+
+    /* Wait for promises to finish and sum the results as the amount of removed resources */
+    const removed = (await Promise.all(promises)).reduce((deleted: number, add: number) => deleted + add, 0)
+
+    /* Check if we are still at root, we are not allowed to delete the root */
+    if (path !== this._resourcesDirectory && /* Check if the directory has any subdirectories now */
+        (await ResourceManager._getSubDirectories(path)).length === 0) {
+      /* Remove the directory in case it does not contain any module and is not a module itself */
+      await rmdir(path)
+    }
+
+    return removed
   }
 
   async installTarball(resource: Resource): Promise<void> {
-    if (! resource.url) {
+    if (!resource.url) {
       throw new Error('Resources of type tarball must define a url property.')
     }
 
@@ -155,20 +156,21 @@ export default class ResourceManager {
   }
 
   async installGit(resource: Resource): Promise<void> {
-    if (! resource.repository) {
+    if (!resource.repository) {
       throw new Error('Git resources must define a repository property.')
     }
+
     /* Resolve the resources path */
     const path = resolve(this._resourcesDirectory, resource.path)
 
     /* Check if the resource directory does already exist */
     if (existsSync(path)) {
       /* Make sure it is a git repository */
-      if (! existsSync(resolve(path, '.git'))) {
+      if (!existsSync(resolve(path, '.git'))) {
         /* Check if the folder is empty */
-        if ( ( await readdir(path) ).length ) {
+        if ((await readdir(path)).length > 0) {
           /* Not empty and not a git, this is an error */
-          throw new Error('Configured resource path is polluted with non-git files at "${resource.path}".')
+          throw new Error(`Configured resource path is polluted with non-git files at "${resource.path}".`)
         } else {
           /* Remove empty directories */
           await rmdir(path)
@@ -179,7 +181,7 @@ export default class ResourceManager {
       let repository: Repository = await Repository.open(path)
 
       /* Make sure it is the correct origin */
-      if ( (await repository.getRemote('origin')).url() !== resource.repository ) {
+      if ((await repository.getRemote('origin')).url() !== resource.repository) {
         /* Remove the repository */
         await rmdir(path)
 
@@ -191,30 +193,32 @@ export default class ResourceManager {
       await Clone.clone(resource.repository, resource.path)
     }
   }
-  
+
   /**
    * Safes the definition back to resources.json
+   *
+   * @return {Promise<void>} Will resolve once the file is safed
    */
   async saveDefinition(): Promise<void> {
     /* Serialize the definition */
-    const json = JSON.stringify(this._definition)
-    
+    const json: string = JSON.stringify(this._definition)
+
     /* (Over-)Write the definition to the resources.json it came from */
-    return writeFile(this._definitionFile, json)
+    await writeFile(this._definitionFile, json)
   }
 
   static async _getSubDirectories(path: string): Promise<string[]> {
-    return ( await readdir(path, { withFileTypes: true }) ).filter((dirent: Dirent) => dirent.isDirectory()).map((dirent: Dirent) => dirent.name)
+    return (await readdir(path, {withFileTypes: true})).filter((dirent: Dirent) => dirent.isDirectory()).map((dirent: Dirent) => dirent.name)
   }
 
   static _extractTarball(tarball: NodeJS.ReadableStream, path: string): Promise<void> {
-    return new Promise((resolve, reject) => {
+    return (new Promise((resolve, reject) => {
       tarball.on('end', resolve)
       tarball.on('error', reject)
 
-      tarball.pipe(Extract({
-        C: path
+      tarball.pipe(exractTar({
+        C: path,
       }))
-    })    
+    }))
   }
 }

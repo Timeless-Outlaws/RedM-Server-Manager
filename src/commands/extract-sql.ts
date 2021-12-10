@@ -1,11 +1,11 @@
 import {Command} from '@oclif/command'
-import ResourceSQLExtractor from '../core/ResourceSQLExtractor'
+import ResourceSQLExtractor from '../core/resource-sql-extractor'
 
 export default class ExtractSQL extends Command {
   static description = 'describe the command here'
 
   static examples = [
-    `$ rsm extract-sql ./resources`,
+    '$ rsm extract-sql ./resources',
   ]
 
   static args = [

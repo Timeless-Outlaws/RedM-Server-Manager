@@ -1,9 +1,8 @@
-import { basename, resolve } from 'path'
-import { existsSync, Dirent } from 'fs'
-import { readdir, readFile, writeFile } from "fs/promises"
+import {basename, resolve} from 'node:path'
+import {existsSync, Dirent} from 'node:fs'
+import {readdir, readFile, writeFile} from 'node:fs/promises'
 
 export default class ResourceSQLExtractor {
-
   _initdbDirectory: string
 
   _resourcesDirectory: string
@@ -13,7 +12,7 @@ export default class ResourceSQLExtractor {
     this._resourcesDirectory = resolve(resourcesDirectory)
   }
 
-  async extract(directory: string = this._resourcesDirectory) {
+  async extract(directory: string = this._resourcesDirectory): Promise<void> {
     /* Make sure the path is resolved */
     directory = resolve(directory)
 
@@ -22,15 +21,15 @@ export default class ResourceSQLExtractor {
       /* Check if the directory is a resource root */
       if (existsSync(resolve(directory, 'fxmanifest.lua')) || existsSync(resolve(directory, '__resource.lua'))) {
         /* Process all .sql files in the root of the resource */
-        for (const sqlFile of ( await readdir(directory) ).filter(path => path.split('.').pop() === 'sql')) {
+        for (const sqlFile of (await readdir(directory)).filter(path => path.split('.').pop() === 'sql')) {
           this.extractSQL(sqlFile)
         }
       } else {
         /* Get all subdirectories of the directory */
-        const subdirectories: string[] = ( await readdir(directory, { withFileTypes: true }) ).filter((dirent: Dirent) => dirent.isDirectory()).map((dirent: Dirent) => dirent.name)
+        const subdirectories: string[] = (await readdir(directory, {withFileTypes: true})).filter((dirent: Dirent) => dirent.isDirectory()).map((dirent: Dirent) => dirent.name)
 
         /* Initialize empty promises array to wait for all subdirectories to finish in parallel */
-        let promises: PromiseLike<void>[] = []
+        const promises: PromiseLike<void>[] = []
 
         /* Process all subDirectories if this is not a resource root */
         for (const subDirectory of subdirectories) {
@@ -50,7 +49,7 @@ export default class ResourceSQLExtractor {
       let sql: string = (await readFile(file)).toString()
 
       /* Check if the SQL does define the used database */
-      if (! sql.includes('USE')) {
+      if (!sql.includes('USE')) {
         /* Prepend the SQL with a use directive */
         sql = `USE ${process.env.MYSQL_DEFAULT_DATABASE}\n` + sql
       }

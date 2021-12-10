@@ -1,11 +1,11 @@
 import {Command, flags} from '@oclif/command'
-import ResourceManager from '../../core/resources/ResourceManager'
+import ResourceManager from '../../core/resources/resource-manager'
 
 export default class ResourcesInstall extends Command {
   static description = 'Installs the resources as defined in resources.json or adds new resource'
 
   static examples = [
-    `$ rsm resources install`,
+    '$ rsm resources install',
   ]
 
   static flags = {

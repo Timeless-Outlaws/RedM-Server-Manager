@@ -5,6 +5,6 @@ describe('build-info', () => {
   .stdout()
   .command(['build-info'])
   .it('runs build-info cmd', ctx => {
-    expect(ctx.stdout).to.match(/Build:\s\".*\",\sCommit:\s\".*\"/)
+    expect(ctx.stdout).to.match(/Build:\s".*",\sCommit:\s".*"/)
   })
 })
