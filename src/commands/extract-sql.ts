@@ -1,5 +1,5 @@
 import {Command} from '@oclif/command'
-import ResourceSQLExtractor from '../../core/ResourceSQLExtractor'
+import ResourceSQLExtractor from '../core/ResourceSQLExtractor'
 
 export default class ExtractSQL extends Command {
   static description = 'describe the command here'

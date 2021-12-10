@@ -1,5 +1,5 @@
 import {Command} from '@oclif/command'
-import BuildServer, { BuildInformation } from '../../core/BuildServer'
+import BuildServer, { BuildInformation } from '../core/BuildServer'
 
 export default class BuildInfo extends Command {
   static description = 'Fetches information about the latest build from the fivem build server.'
