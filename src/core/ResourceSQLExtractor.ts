@@ -1,6 +1,6 @@
 import { basename, resolve } from 'path'
-import { promises, existsSync, readdirSync, readFileSync, writeFileSync, Dirent } from 'fs'
-const { readdir } = promises
+import { existsSync, Dirent } from 'fs'
+import { readdir, readFile, writeFile } from "fs/promises"
 
 export default class ResourceSQLExtractor {
 
@@ -22,7 +22,7 @@ export default class ResourceSQLExtractor {
       /* Check if the directory is a resource root */
       if (existsSync(resolve(directory, 'fxmanifest.lua')) || existsSync(resolve(directory, '__resource.lua'))) {
         /* Process all .sql files in the root of the resource */
-        for (const sqlFile of readdirSync(directory).filter(path => path.split('.').pop() === 'sql')) {
+        for (const sqlFile of ( await readdir(directory) ).filter(path => path.split('.').pop() === 'sql')) {
           this.extractSQL(sqlFile)
         }
       } else {
@@ -43,11 +43,11 @@ export default class ResourceSQLExtractor {
     }
   }
 
-  extractSQL(file: string) {
+  async extractSQL(file: string): Promise<void> {
     /* Make sure the file does exist first */
     if (existsSync(file)) {
       /* Get the files contents */
-      let sql: string = readFileSync(file).toString()
+      let sql: string = (await readFile(file)).toString()
 
       /* Check if the SQL does define the used database */
       if (! sql.includes('USE')) {
@@ -56,7 +56,7 @@ export default class ResourceSQLExtractor {
       }
 
       /* Write to initdb */
-      writeFileSync(resolve(this._initdbDirectory, `999-${basename(file)}.sql`), sql)
+      await writeFile(resolve(this._initdbDirectory, `999-${basename(file)}.sql`), sql)
     }
   }
 }
