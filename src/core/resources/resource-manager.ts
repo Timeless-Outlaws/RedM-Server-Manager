@@ -20,6 +20,25 @@ export default class ResourceManager {
     this._resourcesDirectory = resolve(resourcesDirectory)
   }
 
+  static async init(): Promise<void> {
+    /* Get the path to the resources.json based on the current working directory */
+    const target = resolve(process.cwd(), 'resources.json')
+
+    /* Check if an resources.json does already exist */
+    if (existsSync(target)) {
+      throw new Error('resources.json does already exist.')
+    }
+
+    /* Initialize the new definiton */
+    const definition: Definition = {}
+
+    /* Initialize resources array */
+    definition.resources = []
+
+    /* Write the new resources.json */
+    await writeFile(target, JSON.stringify(definition))
+  }
+
   /**
    * Installs resources from the current definitions
    *
