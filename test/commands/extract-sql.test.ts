@@ -8,10 +8,10 @@ describe('extract-sql', () => {
   /* Run the command */
   test
   .stdout()
-  .command(['extract-sql', 'test/resourceDirectories/extract-sql'])
+  .command(['extract-sql', cwd])
   .it('runs extract-sql cmd', ctx => {
     /* List the extracted files */
-    const files = readdirSync(resolve(cwd))
+    const files = readdirSync(resolve(cwd, 'sql'))
 
     /* Check if all sql files got extracted */
     expect(files).to.lengthOf(3)

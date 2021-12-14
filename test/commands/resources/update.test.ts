@@ -1,6 +1,7 @@
 import {expect, test} from '@oclif/test'
 
 describe('build-info', () => {
+  /* Run the command */
   test
   .stdout()
   .command(['build-info'])

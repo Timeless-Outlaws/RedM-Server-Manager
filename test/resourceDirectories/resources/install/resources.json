@@ -1,0 +1,9 @@
+{
+    "resources": [
+        {
+            "type": "GIT",
+            "path": "pNotify",
+            "url": "https://github.com/bumbummen99/pNotify.git"
+        }
+    ]
+}
