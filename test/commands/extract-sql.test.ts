@@ -8,7 +8,9 @@ describe('extract-sql', () => {
   /* Run the command */
   test
   .stdout()
-  .command(['extract-sql', cwd])
+  .command(['extract-sql', cwd], {
+    root: resolve(cwd)
+  })
   .it('runs extract-sql cmd', ctx => {
     /* List the extracted files */
     const files = readdirSync(resolve(cwd, 'sql')).filter(path => path.toLowerCase() !== '.gitkeep')
