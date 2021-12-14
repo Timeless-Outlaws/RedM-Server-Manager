@@ -18,9 +18,10 @@ describe('resources init', () => {
     root: resolve(cwd)
   })
   .it('runs resources init cmd', ctx => {
+    const files = readdirSync(resolve(cwd)).filter(path => path.toLowerCase() !== '.gitkeep')
+
     /* Check if all sql files got extracted */
-    expect(readdirSync(resolve(cwd)).filter(path => path.toLowerCase() !== '.gitkeep')).to.equal([
-      'resources.json'
-    ])
+    expect(files).to.lengthOf(1)
+    expect(files).to.contain('resources.json')
   })
 })
