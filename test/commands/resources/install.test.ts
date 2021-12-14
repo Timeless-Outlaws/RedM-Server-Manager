@@ -18,7 +18,7 @@ describe('resources install', () => {
 
   test
   .stdout()
-  .command(['resources:install', cwd], {
+  .command(['resources:install'], {
     root: resolve(cwd)
   })
   .it('runs resources install cmd', ctx => {

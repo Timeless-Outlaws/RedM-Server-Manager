@@ -14,7 +14,7 @@ describe('resources init', () => {
 
   test
   .stdout()
-  .command(['resources:init', cwd], {
+  .command(['resources:init'], {
     root: resolve(cwd)
   })
   .it('runs resources init cmd', ctx => {
