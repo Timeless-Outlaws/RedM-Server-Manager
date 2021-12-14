@@ -4,8 +4,8 @@ import {Dirent, existsSync} from 'node:fs'
 import simpleGit, {SimpleGit, ConfigGetResult} from 'simple-git'
 import fetch from 'node-fetch'
 import {Extract as exractTar} from 'tar'
-import {Resource} from './resource'
-import {Definition} from './definition'
+import isGitUrl from 'is-git-url'
+import {Definition, Resource, ResourceType} from './definition'
 
 export default class ResourceManager {
   _definitionFile: string
@@ -30,10 +30,9 @@ export default class ResourceManager {
     }
 
     /* Initialize the new definiton */
-    const definition: Definition = {}
-
-    /* Initialize resources array */
-    definition.resources = []
+    const definition: Definition = {
+      resources: [] // Initialize resources array
+    }
 
     /* Write the new resources.json */
     await writeFile(target, JSON.stringify(definition))
@@ -61,7 +60,7 @@ export default class ResourceManager {
         if ((resource.type && ['tarball'].includes(resource.type)) || !existsSync(resolve(this._resourcesDirectory, resource.path))) {
           /* Check what kind of resource definition we have and use the correct installer */
           switch (resource.type) {
-          case 'tarball':
+          case ResourceType.TARBALL:
             install.push(this.installTarball(resource))
             break
           default:
@@ -161,6 +160,19 @@ export default class ResourceManager {
     return removed
   }
 
+  async addResource(resource: Resource): Promise<void> {
+    /* Check if the resource does already exist in the definition */
+    if (this._definition.resources.filter(entry => entry.type === resource.type && entry.url === resource.url).length) {
+      return
+    }
+
+    /* Add the resource to the definition */
+    this._definition.resources.push(resource)
+
+    /* Save the definition to the disk */
+    await this.saveDefinition()
+  }
+
   async installTarball(resource: Resource): Promise<void> {
     if (!resource.url) {
       throw new Error('Resources of type tarball must define a url property.')
@@ -183,7 +195,7 @@ export default class ResourceManager {
   }
 
   async installGit(resource: Resource): Promise<void> {
-    if (!resource.repository) {
+    if (! resource.url) {
       throw new Error('Git resources must define a repository property.')
     }
 
@@ -214,16 +226,16 @@ export default class ResourceManager {
       const url: ConfigGetResult = await repository.getConfig('remote.origin.url', 'local')
 
       /* Make sure it is the correct origin */
-      if (url.value !== resource.repository) {
+      if (url.value !== resource.url) {
         /* Remove the repository */
         await rmdir(path)
 
         /* Clone the correct repository */
-        await (simpleGit(path).clone(resource.repository, path))
+        await (simpleGit(path).clone(resource.url, path))
       }
     } else {
       /* Clone the repository */
-      await (simpleGit(path).clone(resource.repository, path))
+      await (simpleGit(path).clone(resource.url, path))
     }
   }
 
@@ -238,6 +250,21 @@ export default class ResourceManager {
 
     /* (Over-)Write the definition to the resources.json it came from */
     await writeFile(this._definitionFile, json)
+  }
+
+  static getResourceTypeFromInput(input: string): ResourceType {
+    /* Check if the input is a GIT url */
+    if (isGitUrl(input)) {
+      return ResourceType.GIT
+    }
+    /* Check if the input is a tarball */
+    else if (input.endsWith('.tar.gz')) {
+        return ResourceType.TARBALL
+    }
+    /* Input not supported, fail */
+    else {
+      throw new Error(`Could not determine type for input "${input}".`)
+    }
   }
 
   static async _getSubDirectories(path: string): Promise<string[]> {
