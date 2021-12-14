@@ -14,6 +14,6 @@ describe('extract-sql', () => {
     const files = readdirSync(resolve(cwd, 'sql'))
 
     /* Check if all sql files got extracted */
-    expect(files).to.lengthOf(3)
+    expect(files).to.lengthOf(4)
   })
 })
