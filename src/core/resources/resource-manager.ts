@@ -1,6 +1,6 @@
 import {resolve} from 'node:path'
 import {writeFile, rmdir, readdir} from 'node:fs/promises'
-import {Dirent, existsSync} from 'node:fs'
+import {Dirent, existsSync, readFileSync} from 'node:fs'
 import simpleGit, {SimpleGit, ConfigGetResult} from 'simple-git'
 import fetch from 'node-fetch'
 import {Extract as exractTar} from 'tar'
@@ -16,7 +16,7 @@ export default class ResourceManager {
 
   constructor(definitionDirectory: string = resolve(process.cwd(), 'resources.json'), resourcesDirectory: string = resolve(process.cwd(), 'resources')) {
     this._definitionFile = resolve(definitionDirectory, 'resources.json')
-    this._definition = JSON.parse(this._definitionFile)
+    this._definition = JSON.parse(readFileSync(this._definitionFile).toString())
     this._resourcesDirectory = resolve(resourcesDirectory)
   }
 
