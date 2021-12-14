@@ -14,7 +14,7 @@ describe('resources init', () => {
 
   test
   .stdout()
-  .command(['resources', 'init', cwd])
+  .command(['resources init', cwd])
   .it('runs resources init cmd', ctx => {
     /* Check if all sql files got extracted */
     expect(readdirSync(resolve(cwd)).filter(path => path.toLowerCase() !== '.gitkeep')).to.equal([
