@@ -18,7 +18,7 @@ describe('resources install', () => {
 
   test
   .stdout()
-  .command(['resources', 'install', cwd])
+  .command(['resources:install', cwd])
   .it('runs resources install cmd', ctx => {
     /* Check if all sql files got extracted */
     expect(readdirSync(resolve(cwd))).to.equal([
