@@ -1,0 +1,14 @@
+{
+    "resources": [
+        {
+            "type": "GIT",
+            "path": "resource1",
+            "url": "https://duckduckgo.com"
+        },
+        {
+            "type": "GIT",
+            "path": "resource1",
+            "url": "https://www.torproject.org"
+        }
+    ]
+}
