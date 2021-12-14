@@ -19,7 +19,7 @@ export default class ResourcesInit extends Command {
     /* Check if an resources.json does already exist, ask if we can delete it */
     if (existsSync(target)) {
         /* Ask for permission to remove the existing file */
-        const answer: string = await cli.prompt(`There already is an resources.json at ${target}, do you want to replace it?`)
+        const answer: string = await cli.prompt(`There already is an resources.json at ${target}, do you want to replace it? (Default: no)`)
 
         /* Check the answer, positive starts with y since only y or yes is allowed */
         if (! answer.startsWith('y')) {
