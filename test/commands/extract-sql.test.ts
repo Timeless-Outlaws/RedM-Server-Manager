@@ -3,7 +3,7 @@ import { readdirSync } from 'fs'
 import { resolve } from 'path'
 
 describe('extract-sql', () => {
-  const cwd = resolve(__dirname, '..', '..', 'resourceDirectories', 'extract-sql')
+  const cwd = resolve(__dirname, '..', '..', 'test', 'resourceDirectories', 'extract-sql')
 
   process.chdir(cwd)
 

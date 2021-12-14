@@ -3,7 +3,7 @@ import { existsSync, readdirSync } from 'fs'
 import { resolve } from 'path'
 
 describe('resources install', () => {
-  const cwd = resolve(__dirname, '..', '..', 'resourceDirectories', 'resources', 'install');
+  const cwd = resolve(__dirname, '..', '..', 'test', 'resourceDirectories', 'resources', 'install');
 
   process.chdir(cwd)
 
