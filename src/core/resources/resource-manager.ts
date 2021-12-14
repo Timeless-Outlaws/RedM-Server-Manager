@@ -49,29 +49,23 @@ export default class ResourceManager {
     const update: Promise<void>[]  = []
     let removed          = 0
 
-    /* Get resources from the definition */
-    const resources: Resource[]|undefined = this._definition.resources
-
-    /* Check if there are any resources definitions */
-    if (resources && resources.length > 0) {
-      /* Install every listed resource */
-      for (const resource of resources) {
-        /* Check if we should update or install based on if the resource already exists */
-        if ((resource.type && ['tarball'].includes(resource.type)) || !existsSync(resolve(this._resourcesDirectory, resource.path))) {
-          /* Check what kind of resource definition we have and use the correct installer */
-          switch (resource.type) {
-          case ResourceType.TARBALL:
-            install.push(this.installTarball(resource))
-            break
-          default:
-            install.push(this.installGit(resource))
-          }
-        } else {
-          /* Check what kind of resource definition we have and use the correct installer */
-          switch (resource.type) {
-          default:
-            update.push(this.installGit(resource))
-          }
+    /* Install every listed resource */
+    for (const resource of this._definition.resources) {
+      /* Check if we should update or install based on if the resource already exists */
+      if ((resource.type && ['tarball'].includes(resource.type)) || !existsSync(resolve(this._resourcesDirectory, resource.path))) {
+        /* Check what kind of resource definition we have and use the correct installer */
+        switch (resource.type) {
+        case ResourceType.TARBALL:
+          install.push(this.installTarball(resource))
+          break
+        default:
+          install.push(this.installGit(resource))
+        }
+      } else {
+        /* Check what kind of resource definition we have and use the correct installer */
+        switch (resource.type) {
+        default:
+          update.push(this.installGit(resource))
         }
       }
     }
@@ -83,7 +77,7 @@ export default class ResourceManager {
     ])
 
     /* Remove all resources that are not explicitly installed */
-    removed = await this.clean(this._resourcesDirectory, resources)
+    removed = await this.clean(this._resourcesDirectory)
 
     /* Determine if any actions were performed */
     if (install.length > 0 || update.length > 0 || removed) {
@@ -93,13 +87,7 @@ export default class ResourceManager {
     return 'No changes required, everything is up to date.'
   }
 
-  async clean(path?: string, resources?: Resource[]): Promise<number> {
-    /* Resolve the path if not set */
-    path = path || this._resourcesDirectory
-
-    /* Resolve resources from the definition if not set */
-    resources = resources || this._definition.resources || []
-
+  async clean(path: string = this._resourcesDirectory): Promise<number> {
     /* Check if this directory is a resource */
     const isManifestOutdated = existsSync(resolve(path, 'fxmanifest.lua')) // Determine if the manifest is out of date
     const isResource: boolean = isManifestOutdated || existsSync(resolve(path, 'fxmanifest.lua'))
@@ -107,7 +95,7 @@ export default class ResourceManager {
     /* Directory is a resource */
     if (isResource) {
       /* Find the resource in the definition by its path */
-      const resource: Resource|undefined = resources ? resources.find(resource => path === resolve(this._resourcesDirectory, resource.path)) : undefined
+      const resource: Resource|undefined = this._definition.resources.find(resource => path === resolve(this._resourcesDirectory, resource.path))
 
       /* Check if the resource is in the definition */
       if (resource) {
@@ -136,7 +124,7 @@ export default class ResourceManager {
 
     /* Process all subdirectories as possible resource */
     for (const subdirectory of subdirectories) {
-      promises.push(this.clean(subdirectory, resources))
+      promises.push(this.clean(subdirectory))
     }
 
     /* Wait for promises to finish and sum the results as the amount of removed resources */
@@ -171,6 +159,20 @@ export default class ResourceManager {
 
     /* Save the definition to the disk */
     await this.saveDefinition()
+  }
+
+  async removeResource(path: string): Promise<number> {
+    /* Count the defined resources */
+    const count = this._definition.resources.length
+
+    /* Remove the resource by path */
+    this._definition.resources = this._definition.resources.filter( entry => resolve(entry.path) === resolve(path) )
+
+    /* Clean the removed resources from the disk */
+    await this.clean()
+
+    /* Determine and return how many resources have been removed */
+    return count - this._definition.resources.length
   }
 
   async installTarball(resource: Resource): Promise<void> {

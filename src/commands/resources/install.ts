@@ -17,7 +17,6 @@ export default class ResourcesInstall extends Command {
   ]
 
   static flags = {
-    // can pass either --force or -f
     definition: flags.string({char: 'd'}),
     directory: flags.string({char: 'o'}),
   }
