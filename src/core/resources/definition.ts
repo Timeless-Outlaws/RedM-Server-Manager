@@ -6,7 +6,7 @@ export type Resource = {
     type?: ResourceType,
     path: string,
     url?: string,
-    
+
 }
 
 export enum ResourceType {

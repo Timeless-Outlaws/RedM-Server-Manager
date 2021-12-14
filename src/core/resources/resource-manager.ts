@@ -31,7 +31,7 @@ export default class ResourceManager {
 
     /* Initialize the new definiton */
     const definition: Definition = {
-      resources: [] // Initialize resources array
+      resources: [], // Initialize resources array
     }
 
     /* Write the new resources.json */
@@ -150,7 +150,7 @@ export default class ResourceManager {
 
   async addResource(resource: Resource): Promise<void> {
     /* Check if the resource does already exist in the definition */
-    if (this._definition.resources.filter(entry => entry.type === resource.type && entry.url === resource.url).length) {
+    if (this._definition.resources.some(entry => entry.type === resource.type && entry.url === resource.url)) {
       return
     }
 
@@ -166,7 +166,7 @@ export default class ResourceManager {
     const count = this._definition.resources.length
 
     /* Remove the resource by path */
-    this._definition.resources = this._definition.resources.filter( entry => resolve(entry.path) === resolve(path) )
+    this._definition.resources = this._definition.resources.filter(entry => resolve(entry.path) === resolve(path))
 
     /* Clean the removed resources from the disk */
     await this.clean()
@@ -197,7 +197,7 @@ export default class ResourceManager {
   }
 
   async installGit(resource: Resource): Promise<void> {
-    if (! resource.url) {
+    if (!resource.url) {
       throw new Error('Git resources must define a repository property.')
     }
 
@@ -259,14 +259,14 @@ export default class ResourceManager {
     if (isGitUrl(input)) {
       return ResourceType.GIT
     }
+
     /* Check if the input is a tarball */
-    else if (input.endsWith('.tar.gz')) {
-        return ResourceType.TARBALL
+    if (input.endsWith('.tar.gz')) {
+      return ResourceType.TARBALL
     }
     /* Input not supported, fail */
-    else {
-      throw new Error(`Could not determine type for input "${input}".`)
-    }
+
+    throw new Error(`Could not determine type for input "${input}".`)
   }
 
   static async _getSubDirectories(path: string): Promise<string[]> {

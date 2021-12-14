@@ -9,6 +9,6 @@ export default class ResourcesUpdate extends Command {
 
   async run(): Promise<void> {
     /* Inform the user */
-    this.log(`Not yet implemented :(`)
+    this.log('Not yet implemented :(')
   }
 }

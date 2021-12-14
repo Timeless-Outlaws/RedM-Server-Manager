@@ -9,7 +9,7 @@ export default class ResourcesURemove extends Command {
   ]
 
   static args = [
-    {name: 'path'}
+    {name: 'path'},
   ]
 
   static flags = {
@@ -27,7 +27,7 @@ export default class ResourcesURemove extends Command {
     /* Try to remove the resource and get the amount of removed resources */
     const removed = manager.removeResource(args.path)
 
-    /* Inform the user */ 
+    /* Inform the user */
     if (removed) {
       this.log(`Successfully removed ${removed} resources.`)
     } else {
