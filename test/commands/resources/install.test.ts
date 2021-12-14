@@ -5,13 +5,17 @@ import { resolve } from 'path'
 describe('resources install', () => {
   const cwd = 'test/resourceDirectories/resources/install'
 
-  /* Check that the root dir is only contains resources.json */
-  expect(readdirSync(resolve(cwd))).to.lengthOf(1).contain('resources.json')
+  test
+  .stdout()
+  .it('ensures test directory is clean', ctx => {
+    /* Check that the root dir is only contains resources.json */
+    expect(readdirSync(resolve(cwd))).to.lengthOf(1).contain('resources.json')
 
-  /* Check that resources subdirectory does not exist */
-  expect(existsSync(resolve(cwd, 'resources'))).to.be.false
+    /* Check that resources subdirectory does not exist */
+    expect(existsSync(resolve(cwd, 'resources'))).to.be.false
+  })
+  
 
-  /* Run the command */
   test
   .stdout()
   .command(['resources', 'install', cwd])

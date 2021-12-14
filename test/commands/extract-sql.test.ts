@@ -1,5 +1,5 @@
 import {expect, test} from '@oclif/test'
-import { mkdtempSync, readdirSync } from 'fs'
+import { readdirSync } from 'fs'
 import { resolve } from 'path'
 
 describe('extract-sql', () => {
@@ -11,9 +11,9 @@ describe('extract-sql', () => {
   .command(['extract-sql', cwd])
   .it('runs extract-sql cmd', ctx => {
     /* List the extracted files */
-    const files = readdirSync(resolve(cwd, 'sql'))
+    const files = readdirSync(resolve(cwd, 'sql')).filter(path => path.toLowerCase() !== '.gitkeep')
 
     /* Check if all sql files got extracted */
-    expect(files).to.lengthOf(4)
+    expect(files).to.lengthOf(3)
   })
 })
