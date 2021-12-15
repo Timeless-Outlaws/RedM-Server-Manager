@@ -173,6 +173,9 @@ export default class ResourceManager {
     /* Remove the resource by path */
     this._definition.resources = this._definition.resources.filter(entry => resolve(entry.path) !== resolve(path))
 
+    /* Save the resource definition file */
+    await this.saveDefinition()
+
     /* Clean the removed resources from the disk */
     await this.clean()
 
