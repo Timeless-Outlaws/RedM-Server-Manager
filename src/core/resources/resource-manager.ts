@@ -1,5 +1,5 @@
 import {resolve} from 'node:path'
-import {writeFile, rmdir, readdir, mkdir} from 'node:fs/promises'
+import {writeFile, rm, readdir, mkdir} from 'node:fs/promises'
 import {Dirent, existsSync, readFileSync} from 'node:fs'
 import simpleGit, {SimpleGit, ConfigGetResult} from 'simple-git'
 import fetch from 'node-fetch'
@@ -114,7 +114,7 @@ export default class ResourceManager {
       }
 
       /* Remove the resource as it is missing from the definition */
-      await rmdir(path)
+      await rm(path, { recursive: true, force: true })
 
       /* Notify that one resource has been removed */
       return 1
