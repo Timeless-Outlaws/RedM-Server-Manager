@@ -17,7 +17,7 @@ export default class ExtractSQL extends Command {
     const {flags} = this.parse(ExtractSQL)
 
     /* Initialize the extractor with the provided resourcesDirectory */
-    const extractor = new ResourceSQLExtractor(undefined, flags.cwd)
+    const extractor = new ResourceSQLExtractor(flags.cwd, flags.cwd)
 
     /* Extract the SQL */
     await extractor.extract()

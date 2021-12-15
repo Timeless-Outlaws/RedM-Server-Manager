@@ -1,4 +1,4 @@
-import {basename, resolve} from 'node:path'
+import {basename, dirname, parse, resolve} from 'node:path'
 import {existsSync, Dirent} from 'node:fs'
 import {readdir, readFile, writeFile} from 'node:fs/promises'
 
@@ -23,7 +23,7 @@ export default class ResourceSQLExtractor {
         /* Process all .sql files in the root of the resource */
         const directories: string[] = await readdir(directory)
         for (const sqlFile of directories.filter(path => path.split('.').pop() === 'sql')) {
-          this.extractSQL(sqlFile)
+          await this.extractSQL(resolve(directory, sqlFile))
         }
       } else {
         /* Get all subdirectories of the directory */
@@ -34,7 +34,7 @@ export default class ResourceSQLExtractor {
 
         /* Process all subDirectories if this is not a resource root */
         for (const subDirectory of subdirectories.filter((dirent: Dirent) => dirent.isDirectory()).map((dirent: Dirent) => dirent.name)) {
-          promises.push(this.extract(subDirectory))
+          promises.push(this.extract(resolve(directory, subDirectory)))
         }
 
         /* Search subdirectories in parallel */
@@ -57,7 +57,7 @@ export default class ResourceSQLExtractor {
       }
 
       /* Write to initdb */
-      await writeFile(resolve(this._initdbDirectory, `999-${basename(file)}.sql`), sql)
+      await writeFile(resolve(this._initdbDirectory, `999-${basename(dirname(file))}-${parse(file).name}.sql`), sql)
     }
   }
 }
