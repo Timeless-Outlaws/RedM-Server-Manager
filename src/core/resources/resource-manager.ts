@@ -14,10 +14,10 @@ export default class ResourceManager {
 
   _resourcesDirectory: string
 
-  constructor(definitionDirectory: string = resolve(process.cwd()), resourcesDirectory: string = resolve(process.cwd(), 'resources')) {
+  constructor(definitionDirectory: string = resolve(process.cwd()), resourcesDirectory: string = resolve(process.cwd())) {
     this._definitionFile = resolve(definitionDirectory, 'resources.json')
     this._definition = JSON.parse(readFileSync(this._definitionFile).toString())
-    this._resourcesDirectory = resolve(resourcesDirectory)
+    this._resourcesDirectory = resolve(resourcesDirectory, 'resources')
   }
 
   static async init(): Promise<void> {

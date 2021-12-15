@@ -17,8 +17,7 @@ export default class ResourcesInstall extends Command {
   ]
 
   static flags = {
-    definition: flags.string({char: 'd'}),
-    directory: flags.string({char: 'o'}),
+    cwd: flags.string(),
   }
 
   async run(): Promise<void> {
@@ -26,7 +25,7 @@ export default class ResourcesInstall extends Command {
     const {args, flags} = this.parse(ResourcesInstall)
 
     /* Initialize the manager */
-    const manager = new ResourceManager(flags.definition, flags.directory)
+    const manager = new ResourceManager(flags.cwd, flags.cwd)
 
     /* Check if we are supposed to install a resource, otherwise just install */
     if (args.resource || args.path) {
@@ -42,11 +41,8 @@ export default class ResourcesInstall extends Command {
       /* Get the type of resource to install, will fail if the resource type can not be determined */
       const resourceType: ResourceType = ResourceManager.getResourceTypeFromInput(args.resource)
 
-      /* Initialize the ResourceManager now that we have a valid type and path */
-      const resourceManager: ResourceManager = new ResourceManager(flags.definition, flags.directory)
-
       /* Add the resource to the definition, this will also install the resource and revert the definition on success */
-      await resourceManager.addResource({
+      await manager.addResource({
         type: resourceType,
         path: args.path,
         url: args.resource,

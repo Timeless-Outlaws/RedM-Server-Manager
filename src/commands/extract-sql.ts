@@ -1,4 +1,4 @@
-import {Command} from '@oclif/command'
+import {Command, flags} from '@oclif/command'
 import ResourceSQLExtractor from '../core/resource-sql-extractor'
 
 export default class ExtractSQL extends Command {
@@ -8,16 +8,16 @@ export default class ExtractSQL extends Command {
     '$ rsm extract-sql ./resources',
   ]
 
-  static args = [
-    {name: 'resourcesDirectory'},
-  ]
+  static flags = {
+    cwd: flags.string(),
+  }
 
   async run(): Promise<void> {
     /* Get the arguments */
-    const {args} = this.parse(ExtractSQL)
+    const {flags} = this.parse(ExtractSQL)
 
     /* Initialize the extractor with the provided resourcesDirectory */
-    const extractor = new ResourceSQLExtractor(undefined, args.resourcesDirectory)
+    const extractor = new ResourceSQLExtractor(undefined, flags.cwd)
 
     /* Extract the SQL */
     await extractor.extract()

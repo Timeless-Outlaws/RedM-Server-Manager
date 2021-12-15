@@ -7,9 +7,9 @@ export default class ResourceSQLExtractor {
 
   _resourcesDirectory: string
 
-  constructor(initdbDirectory: string = resolve('docker-entrypoint-initdb.d'), resourcesDirectory: string = resolve(process.cwd(), 'resources')) {
-    this._initdbDirectory = resolve(initdbDirectory)
-    this._resourcesDirectory = resolve(resourcesDirectory)
+  constructor(initdbDirectory: string = resolve(process.cwd()), resourcesDirectory: string = resolve(process.cwd())) {
+    this._initdbDirectory = resolve(initdbDirectory, 'initdb')
+    this._resourcesDirectory = resolve(resourcesDirectory, 'resources')
   }
 
   async extract(directory: string = this._resourcesDirectory): Promise<void> {

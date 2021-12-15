@@ -5,8 +5,6 @@ import { resolve } from 'path'
 describe('resources init', () => {
   const cwd = resolve(__dirname, '..', '..', 'resourceDirectories', 'resources', 'init')
 
-  process.chdir(cwd)
-
   test
   .stdout()
   .it('checks that cwd is empty first', ctx => {
@@ -16,7 +14,7 @@ describe('resources init', () => {
 
   test
   .stdout()
-  .command(['resources:init'])
+  .command(['resources:init', `--cwd=${cwd}`])
   .it('runs resources init cmd', ctx => {
     const files = readdirSync(cwd).filter(path => path.toLowerCase() !== '.gitkeep')
 

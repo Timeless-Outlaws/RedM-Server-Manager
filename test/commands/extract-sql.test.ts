@@ -5,12 +5,10 @@ import { resolve } from 'path'
 describe('extract-sql', () => {
   const cwd = resolve(__dirname, '..', 'resourceDirectories', 'extract-sql')
 
-  process.chdir(cwd)
-
   /* Run the command */
   test
   .stdout()
-  .command(['extract-sql', cwd], {
+  .command(['extract-sql', `--cwd=${cwd}`], {
     root: resolve(cwd)
   })
   .it('runs extract-sql cmd', ctx => {

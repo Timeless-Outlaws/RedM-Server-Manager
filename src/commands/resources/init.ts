@@ -1,4 +1,4 @@
-import {Command} from '@oclif/command'
+import {Command, flags} from '@oclif/command'
 import cli from 'cli-ux'
 import {existsSync} from 'node:fs'
 import {rm} from 'node:fs/promises'
@@ -12,9 +12,16 @@ export default class ResourcesInit extends Command {
     '$ rsm resources init',
   ]
 
+  static flags = {
+    cwd: flags.string(),
+  }
+
   async run(): Promise<void> {
+    /* Get the arguments */
+    const {flags} = this.parse(ResourcesInit)
+
     /* Get the path to the resources.json based on the current working directory */
-    const target = resolve(process.cwd(), 'resources.json')
+    const target = resolve(flags.cwd || process.cwd(), 'resources.json')
 
     /* Check if an resources.json does already exist, ask if we can delete it */
     if (existsSync(target)) {

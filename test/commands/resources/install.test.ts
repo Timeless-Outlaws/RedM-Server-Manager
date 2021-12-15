@@ -5,8 +5,6 @@ import { resolve } from 'path'
 describe('resources install', () => {
   const cwd = resolve(__dirname, '..', '..', 'resourceDirectories', 'resources', 'install');
 
-  process.chdir(cwd)
-
   test
   .stdout()
   .it('ensures test directory is clean', ctx => {
@@ -20,7 +18,7 @@ describe('resources install', () => {
 
   test
   .stdout()
-  .command(['resources:install'])
+  .command(['resources:install', `--cwd=${cwd}`])
   .it('runs resources install cmd', ctx => {
     const files = readdirSync(resolve(cwd, 'resources'))
 

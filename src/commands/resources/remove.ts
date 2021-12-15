@@ -13,8 +13,7 @@ export default class ResourcesURemove extends Command {
   ]
 
   static flags = {
-    definition: flags.string({char: 'd'}),
-    directory: flags.string({char: 'o'}),
+    cwd: flags.string(),
   }
 
   async run(): Promise<void> {
@@ -22,7 +21,7 @@ export default class ResourcesURemove extends Command {
     const {args, flags} = this.parse(ResourcesURemove)
 
     /* Initialize the manager */
-    const manager = new ResourceManager(flags.definition, flags.directory)
+    const manager = new ResourceManager(flags.cwd, flags.cwd)
 
     /* Try to remove the resource and get the amount of removed resources */
     const removed = manager.removeResource(args.path)
