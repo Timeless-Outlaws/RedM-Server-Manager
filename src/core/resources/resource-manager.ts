@@ -146,7 +146,7 @@ export default class ResourceManager {
       /* Check if the directory has any subdirectories now */
       if  (subdirectories.length === 0) {
       /* Remove the directory in case it does not contain any module and is not a module itself */
-        await rm(path, , { recursive: true, force: true })
+        await rm(path, { recursive: true, force: true })
       }
     }
 
