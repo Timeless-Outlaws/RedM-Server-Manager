@@ -23,6 +23,10 @@ export default class ResourcesURemove extends Command {
     /* Initialize the manager */
     const manager = new ResourceManager(flags.cwd, flags.cwd)
 
+    if (args.path) {
+      this.error('You have to provide the path to the resource (relative from resources/)')
+    }
+
     /* Try to remove the resource and get the amount of removed resources */
     const removed = await manager.removeResource(args.path)
 
