@@ -13,7 +13,7 @@ describe('extract-sql', () => {
   })
   .it('runs extract-sql cmd', ctx => {
     /* List the extracted files */
-    const files = readdirSync(resolve(cwd, 'sql')).filter(path => path.toLowerCase() !== '.gitkeep')
+    const files = readdirSync(resolve(cwd, 'initdb')).filter(path => path.toLowerCase() !== '.gitkeep')
 
     /* Check if all sql files got extracted */
     expect(files).to.lengthOf(3)
