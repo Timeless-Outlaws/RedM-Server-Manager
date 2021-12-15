@@ -18,7 +18,7 @@ describe('resources install', () => {
   test
   .stdout()
   .command(['resources:install', `--cwd=${cwd}`])
-  .it('runs resources install cmd', () => {
+  .it('install from definition file', () => {
     const files = readdirSync(resolve(cwd, 'resources'))
 
     /* Check if all sql files got extracted */
@@ -29,7 +29,7 @@ describe('resources install', () => {
   test
   .stdout()
   .command(['resources:install', 'https://github.com/Timeless-Outlaws/fxmigrant.git', 'fxmigrant', `--cwd=${cwd}`])
-  .it('runs resources install cmd', () => {
+  .it('can add resources to the definition', () => {
     const files = readdirSync(resolve(cwd, 'resources'))
 
     /* Check if all sql files got extracted */

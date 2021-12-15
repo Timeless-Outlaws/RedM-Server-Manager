@@ -29,13 +29,13 @@ export default class ResourcesInstall extends Command {
 
     /* Check if we are supposed to install a resource, otherwise just install */
     if (args.resource || args.path) {
-      if (!args.resource || !args.path) {
+      if (! args.resource || ! args.path) {
         throw new Error('When installing resources the resource AND path has to be provided.')
       }
 
       /* Check if the given path exists */
-      if (!existsSync(resolve(args.path))) {
-        throw new Error(`The provided path does not exist at ${args.path}.`)
+      if (existsSync(resolve(args.path))) {
+        throw new Error(`The provided path does already exist at ${resolve(args.path)}.`)
       }
 
       /* Get the type of resource to install, will fail if the resource type can not be determined */
