@@ -33,7 +33,7 @@ describe('resources install', () => {
     const files = readdirSync(resolve(cwd, 'resources'))
 
     /* Check if all sql files got extracted */
-    expect(files).to.lengthOf(1)
+    expect(files).to.lengthOf(2)
     expect(files).to.contain('pNotify')
     expect(files).to.contain('fxmigrant')
   })
