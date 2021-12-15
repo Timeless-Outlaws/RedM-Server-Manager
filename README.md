@@ -3,6 +3,7 @@ RedM Server Manager
 
 A CLI server manager written for the dockerized FiveM server.
 
+[![Test](https://github.com/Timeless-Outlaws/RedM-Server-Manager/actions/workflows/Test.yml/badge.svg)](https://github.com/Timeless-Outlaws/RedM-Server-Manager/actions/workflows/Test.yml)
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
 [![Version](https://img.shields.io/npm/v/redm-server-manager.svg)](https://npmjs.org/package/redm-server-manager)
 [![CircleCI](https://circleci.com/gh/Timeless-Outlaws/RedM-Server-Manager/tree/main.svg?style=shield)](https://circleci.com/gh/Timeless-Outlaws/RedM-Server-Manager/tree/main)
