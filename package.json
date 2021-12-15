@@ -1,7 +1,7 @@
 {
   "name": "redm-server-manager",
-  "description": "Manager for the dockerized RedM server.",
-  "version": "0.0.7",
+  "description": "A CLI server manager written for the dockerized FiveM server.",
+  "version": "0.0.8",
   "author": "Patrick Henninger",
   "bin": {
     "rsm": "./bin/run"

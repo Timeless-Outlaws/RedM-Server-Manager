@@ -21,7 +21,7 @@ $ npm install -g redm-server-manager
 $ rsm COMMAND
 running command...
 $ rsm (--version)
-redm-server-manager/0.0.7 linux-x64 node-v17.2.0
+redm-server-manager/0.0.8 linux-x64 node-v17.2.0
 $ rsm --help [COMMAND]
 USAGE
   $ rsm COMMAND
@@ -53,7 +53,7 @@ EXAMPLES
   $ rsm build-info latest http://runtime.fivem.net/artifacts/fivem/build_proot_linux/master
 ```
 
-_See code: [lib/commands/build-info.js](https://github.com/bumbummen99/RedM/blob/v0.0.7/lib/commands/build-info.js)_
+_See code: [lib/commands/build-info.js](https://github.com/bumbummen99/RedM/blob/v0.0.8/lib/commands/build-info.js)_
 
 ## `rsm extract-sql [RESOURCESDIRECTORY]`
 
@@ -70,7 +70,7 @@ EXAMPLES
   $ rsm extract-sql ./resources
 ```
 
-_See code: [lib/commands/extract-sql.js](https://github.com/bumbummen99/RedM/blob/v0.0.7/lib/commands/extract-sql.js)_
+_See code: [lib/commands/extract-sql.js](https://github.com/bumbummen99/RedM/blob/v0.0.8/lib/commands/extract-sql.js)_
 
 ## `rsm help [COMMAND]`
 
