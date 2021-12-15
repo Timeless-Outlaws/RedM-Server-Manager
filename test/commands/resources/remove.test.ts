@@ -1,3 +1,0 @@
-describe('resources remove', () => {
-  // TODO
-})

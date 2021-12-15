@@ -2,7 +2,7 @@ import {expect, test} from '@oclif/test'
 import {existsSync, readdirSync} from 'node:fs'
 import {resolve} from 'node:path'
 
-describe('resources install', () => {
+describe('resources install and remove', () => {
   const cwd = resolve('test', 'resourceDirectories', 'resources', 'install')
 
   test
@@ -35,6 +35,17 @@ describe('resources install', () => {
     /* Check if all sql files got extracted */
     expect(files).to.lengthOf(2)
     expect(files).to.contain('pNotify')
+    expect(files).to.contain('fxmigrant')
+  })
+
+  test
+  .stdout()
+  .command(['resources:remove', 'pNotify', `--cwd=${cwd}`])
+  .it('can remove resources from the definition', () => {
+    const files = readdirSync(resolve(cwd, 'resources'))
+
+    /* Check if all sql files got extracted */
+    expect(files).to.lengthOf(1)
     expect(files).to.contain('fxmigrant')
   })
 })
