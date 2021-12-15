@@ -114,7 +114,7 @@ export default class ResourceManager {
       }
 
       /* Remove the resource as it is missing from the definition */
-      await rm(path, { recursive: true, force: true })
+      await rm(path)
 
       /* Notify that one resource has been removed */
       return 1
@@ -146,7 +146,7 @@ export default class ResourceManager {
       /* Check if the directory has any subdirectories now */
       if  (subdirectories.length === 0) {
       /* Remove the directory in case it does not contain any module and is not a module itself */
-        await rmdir(path)
+        await rm(path)
       }
     }
 
@@ -194,7 +194,7 @@ export default class ResourceManager {
     /* Check if the resource directory does already exist */
     if (existsSync(path)) {
       /* Remove it */
-      rmdir(path)
+      rm(path)
     }
 
     /* Download the latest tarball */
@@ -225,7 +225,7 @@ export default class ResourceManager {
           throw new Error(`Configured resource path is polluted with non-git files at "${resource.path}".`)
         } else {
           /* Remove empty directories */
-          await rmdir(path)
+          await rm(path)
         }
       }
 
@@ -238,7 +238,7 @@ export default class ResourceManager {
       /* Make sure it is the correct origin */
       if (url.value !== resource.url) {
         /* Remove the repository */
-        await rmdir(path)
+        await rm(path)
 
         /* Clone the correct repository */
         await (simpleGit().clone(resource.url, path))
