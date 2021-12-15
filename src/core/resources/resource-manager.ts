@@ -1,5 +1,5 @@
 import {resolve} from 'node:path'
-import {writeFile, rmdir, readdir} from 'node:fs/promises'
+import {writeFile, rmdir, readdir, mkdir} from 'node:fs/promises'
 import {Dirent, existsSync, readFileSync} from 'node:fs'
 import simpleGit, {SimpleGit, ConfigGetResult} from 'simple-git'
 import fetch from 'node-fetch'
@@ -44,6 +44,11 @@ export default class ResourceManager {
    * @return {Promise<void>} Will resolve once all resources are installed and the directory is cleaned
    */
   async install(): Promise<string> {
+    /* Create the resources directory if it does not exist */
+    if (! existsSync(this._resourcesDirectory)) {
+      await mkdir(this._resourcesDirectory)
+    }
+
     /* Keep track of resource actions */
     const install: Promise<void>[] = []
     const update: Promise<void>[]  = []
@@ -77,7 +82,7 @@ export default class ResourceManager {
     ])
 
     /* Remove all resources that are not explicitly installed */
-    removed = await this.clean(this._resourcesDirectory)
+    removed = await this.clean()
 
     /* Determine if any actions were performed */
     if (install.length > 0 || update.length > 0 || removed) {
@@ -89,7 +94,7 @@ export default class ResourceManager {
 
   async clean(path: string = this._resourcesDirectory): Promise<number> {
     /* Check if this directory is a resource */
-    const isManifestOutdated = existsSync(resolve(path, 'fxmanifest.lua')) // Determine if the manifest is out of date
+    const isManifestOutdated = existsSync(resolve(path, '__resource.lua')) // Determine if the manifest is out of date
     const isResource: boolean = isManifestOutdated || existsSync(resolve(path, 'fxmanifest.lua'))
 
     /* Directory is a resource */
@@ -124,7 +129,7 @@ export default class ResourceManager {
 
     /* Process all subdirectories as possible resource */
     for (const subdirectory of subdirectories) {
-      promises.push(this.clean(subdirectory))
+      promises.push(this.clean(resolve(path, subdirectory)))
     }
 
     /* Wait for promises to finish and sum the results as the amount of removed resources */
@@ -233,11 +238,11 @@ export default class ResourceManager {
         await rmdir(path)
 
         /* Clone the correct repository */
-        await (simpleGit(path).clone(resource.url, path))
+        await (simpleGit().clone(resource.url, path))
       }
     } else {
       /* Clone the repository */
-      await (simpleGit(path).clone(resource.url, path))
+      await (simpleGit().clone(resource.url, path))
     }
   }
 

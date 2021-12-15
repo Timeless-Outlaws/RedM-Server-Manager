@@ -20,10 +20,10 @@ describe('resources install', () => {
   .stdout()
   .command(['resources:install', `--cwd=${cwd}`])
   .it('runs resources install cmd', ctx => {
-    const files = readdirSync(resolve(cwd, 'resources'))
+    const rootfiles = readdirSync(resolve(cwd, 'resources'))
 
     /* Check if all sql files got extracted */
-    expect(files).to.lengthOf(1)
-    expect(files).to.contain('resources.json')
+    expect(rootfiles).to.lengthOf(1)
+    expect(rootfiles).to.contain('pNotify')
   })
 })
