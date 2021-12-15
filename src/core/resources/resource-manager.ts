@@ -171,7 +171,7 @@ export default class ResourceManager {
     const count = this._definition.resources.length
 
     /* Remove the resource by path */
-    this._definition.resources = this._definition.resources.filter(entry => resolve(entry.path) === resolve(path))
+    this._definition.resources = this._definition.resources.filter(entry => resolve(entry.path) !== resolve(path))
 
     /* Clean the removed resources from the disk */
     await this.clean()
