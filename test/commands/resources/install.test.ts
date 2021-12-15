@@ -19,10 +19,22 @@ describe('resources install', () => {
   .stdout()
   .command(['resources:install', `--cwd=${cwd}`])
   .it('runs resources install cmd', () => {
-    const rootfiles = readdirSync(resolve(cwd, 'resources'))
+    const files = readdirSync(resolve(cwd, 'resources'))
 
     /* Check if all sql files got extracted */
-    expect(rootfiles).to.lengthOf(1)
-    expect(rootfiles).to.contain('pNotify')
+    expect(files).to.lengthOf(1)
+    expect(files).to.contain('pNotify')
+  })
+
+  test
+  .stdout()
+  .command(['resources:install', 'https://github.com/Timeless-Outlaws/fxmigrant.git', 'fxmigrant', `--cwd=${cwd}`])
+  .it('runs resources install cmd', () => {
+    const files = readdirSync(resolve(cwd, 'resources'))
+
+    /* Check if all sql files got extracted */
+    expect(files).to.lengthOf(1)
+    expect(files).to.contain('pNotify')
+    expect(files).to.contain('fxmigrant')
   })
 })
