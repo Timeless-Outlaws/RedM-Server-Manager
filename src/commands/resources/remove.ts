@@ -24,7 +24,7 @@ export default class ResourcesURemove extends Command {
     const manager = new ResourceManager(flags.cwd, flags.cwd)
 
     /* Try to remove the resource and get the amount of removed resources */
-    const removed = manager.removeResource(args.path)
+    const removed = await manager.removeResource(args.path)
 
     /* Inform the user */
     if (removed) {
