@@ -47,9 +47,9 @@ export default class ResourcesInstall extends Command {
         path: args.path,
         url: args.resource,
       })
-    } else {
-      /* Intall resources as defined */
-      await manager.install()
     }
+
+    /* Intall resources as defined */
+    await manager.install()
   }
 }
