@@ -20,7 +20,7 @@ $ npm install -g redm-server-manager
 $ rsm COMMAND
 running command...
 $ rsm (--version)
-redm-server-manager/0.0.6 linux-x64 node-v17.2.0
+redm-server-manager/0.0.7 linux-x64 node-v17.2.0
 $ rsm --help [COMMAND]
 USAGE
   $ rsm COMMAND
@@ -32,7 +32,10 @@ USAGE
 * [`rsm build-info [TYPE] [URL]`](#rsm-build-info-type-url)
 * [`rsm extract-sql [RESOURCESDIRECTORY]`](#rsm-extract-sql-resourcesdirectory)
 * [`rsm help [COMMAND]`](#rsm-help-command)
-* [`rsm resources install`](#rsm-resources-install)
+* [`rsm resources init`](#rsm-resources-init)
+* [`rsm resources install [RESOURCE] [PATH]`](#rsm-resources-install-resource-path)
+* [`rsm resources remove [PATH]`](#rsm-resources-remove-path)
+* [`rsm resources update`](#rsm-resources-update)
 
 ## `rsm build-info [TYPE] [URL]`
 
@@ -49,7 +52,7 @@ EXAMPLES
   $ rsm build-info latest http://runtime.fivem.net/artifacts/fivem/build_proot_linux/master
 ```
 
-_See code: [src/commands/build-info.ts](https://github.com/bumbummen99/RedM/blob/v0.0.6/src/commands/build-info.ts)_
+_See code: [lib/commands/build-info.js](https://github.com/bumbummen99/RedM/blob/v0.0.7/lib/commands/build-info.js)_
 
 ## `rsm extract-sql [RESOURCESDIRECTORY]`
 
@@ -66,7 +69,7 @@ EXAMPLES
   $ rsm extract-sql ./resources
 ```
 
-_See code: [src/commands/extract-sql.ts](https://github.com/bumbummen99/RedM/blob/v0.0.6/src/commands/extract-sql.ts)_
+_See code: [lib/commands/extract-sql.js](https://github.com/bumbummen99/RedM/blob/v0.0.7/lib/commands/extract-sql.js)_
 
 ## `rsm help [COMMAND]`
 
@@ -88,13 +91,28 @@ DESCRIPTION
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.1.10/src/commands/help.ts)_
 
-## `rsm resources install`
+## `rsm resources init`
+
+Initializes a new resources.json in the current directory
+
+```
+USAGE
+  $ rsm resources init
+
+DESCRIPTION
+  Initializes a new resources.json in the current directory
+
+EXAMPLES
+  $ rsm resources init
+```
+
+## `rsm resources install [RESOURCE] [PATH]`
 
 Installs the resources as defined in resources.json or adds new resource
 
 ```
 USAGE
-  $ rsm resources install [-d <value>] [-o <value>]
+  $ rsm resources install [RESOURCE] [PATH] [-d <value>] [-o <value>]
 
 FLAGS
   -d, --definition=<value>
@@ -105,5 +123,39 @@ DESCRIPTION
 
 EXAMPLES
   $ rsm resources install
+```
+
+## `rsm resources remove [PATH]`
+
+Removes resources from resources.json
+
+```
+USAGE
+  $ rsm resources remove [PATH] [-d <value>] [-o <value>]
+
+FLAGS
+  -d, --definition=<value>
+  -o, --directory=<value>
+
+DESCRIPTION
+  Removes resources from resources.json
+
+EXAMPLES
+  $ rsm resources remove <path>
+```
+
+## `rsm resources update`
+
+Update resources in resources.json to their latest version based on the strategy
+
+```
+USAGE
+  $ rsm resources update
+
+DESCRIPTION
+  Update resources in resources.json to their latest version based on the strategy
+
+EXAMPLES
+  $ rsm resources update
 ```
 <!-- commandsstop -->
