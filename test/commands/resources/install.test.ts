@@ -3,7 +3,7 @@ import {existsSync, readdirSync} from 'node:fs'
 import {resolve} from 'node:path'
 
 describe('resources install', () => {
-  const cwd = resolve(__dirname, '..', '..', 'resourceDirectories', 'resources', 'install')
+  const cwd = resolve('test', 'resourceDirectories', 'resources', 'install')
 
   test
   .stdout()

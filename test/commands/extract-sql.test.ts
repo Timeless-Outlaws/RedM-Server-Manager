@@ -3,7 +3,7 @@ import {readdirSync} from 'node:fs'
 import {resolve} from 'node:path'
 
 describe('extract-sql', () => {
-  const cwd = resolve(__dirname, '..', 'resourceDirectories', 'extract-sql')
+  const cwd = resolve('test', 'resourceDirectories', 'extract-sql')
 
   /* Run the command */
   test
