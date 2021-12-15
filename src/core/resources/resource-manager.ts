@@ -20,9 +20,9 @@ export default class ResourceManager {
     this._resourcesDirectory = resolve(resourcesDirectory, 'resources')
   }
 
-  static async init(): Promise<void> {
+  static async init(path: string = resolve(process.cwd())): Promise<void> {
     /* Get the path to the resources.json based on the current working directory */
-    const target = resolve(process.cwd(), 'resources.json')
+    const target = resolve(path, 'resources.json')
 
     /* Check if an resources.json does already exist */
     if (existsSync(target)) {

@@ -43,7 +43,7 @@ export default class ResourcesInit extends Command {
     this.log(`Initializing a new resources.json at ${target}...`)
 
     /* Initialize the resources.json */
-    await ResourceManager.init()
+    await ResourceManager.init(flags.cwd)
 
     /* Inform the user */
     this.log('Successfully initialzed resources.json!')
