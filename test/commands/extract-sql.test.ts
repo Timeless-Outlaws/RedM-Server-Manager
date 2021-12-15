@@ -1,6 +1,6 @@
 import {expect, test} from '@oclif/test'
-import { readdirSync } from 'fs'
-import { resolve } from 'path'
+import {readdirSync} from 'node:fs'
+import {resolve} from 'node:path'
 
 describe('extract-sql', () => {
   const cwd = resolve(__dirname, '..', 'resourceDirectories', 'extract-sql')
@@ -9,9 +9,9 @@ describe('extract-sql', () => {
   test
   .stdout()
   .command(['extract-sql', `--cwd=${cwd}`], {
-    root: resolve(cwd)
+    root: resolve(cwd),
   })
-  .it('runs extract-sql cmd', ctx => {
+  .it('runs extract-sql cmd', () => {
     /* List the extracted files */
     const files = readdirSync(resolve(cwd, 'initdb')).filter(path => path.toLowerCase() !== '.gitkeep')
 

@@ -20,11 +20,16 @@ export default class ResourceSQLExtractor {
     if (existsSync(directory)) {
       /* Check if the directory is a resource root */
       if (existsSync(resolve(directory, 'fxmanifest.lua')) || existsSync(resolve(directory, '__resource.lua'))) {
+        /* Initialize empty promises array to wait for all subdirectories to finish in parallel */
+        const promises: PromiseLike<void>[] = []
+
         /* Process all .sql files in the root of the resource */
         const directories: string[] = await readdir(directory)
         for (const sqlFile of directories.filter(path => path.split('.').pop() === 'sql')) {
-          await this.extractSQL(resolve(directory, sqlFile))
+          promises.push(this.extractSQL(resolve(directory, sqlFile)))
         }
+
+        await Promise.all(promises)
       } else {
         /* Get all subdirectories of the directory */
         const subdirectories: Dirent[] = await readdir(directory, {withFileTypes: true})

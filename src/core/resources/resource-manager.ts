@@ -45,7 +45,7 @@ export default class ResourceManager {
    */
   async install(): Promise<string> {
     /* Create the resources directory if it does not exist */
-    if (! existsSync(this._resourcesDirectory)) {
+    if (!existsSync(this._resourcesDirectory)) {
       await mkdir(this._resourcesDirectory)
     }
 

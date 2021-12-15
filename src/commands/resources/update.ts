@@ -1,5 +1,5 @@
 import {Command, flags} from '@oclif/command'
-import ResourceManager from '../../core/resources/resource-manager'
+//import ResourceManager from '../../core/resources/resource-manager'
 
 export default class ResourcesUpdate extends Command {
   static description = 'Update resources in resources.json to their latest version based on the strategy'
@@ -14,10 +14,10 @@ export default class ResourcesUpdate extends Command {
 
   async run(): Promise<void> {
     /* Get the arguments */
-    const {args, flags} = this.parse(ResourcesUpdate)
+    // const {flags} = this.parse(ResourcesUpdate)
 
     /* Initialize the manager */
-    const manager = new ResourceManager(flags.cwd, flags.cwd)
+    // const manager = new ResourceManager(flags.cwd, flags.cwd)
 
     /* Inform the user */
     this.log('Not yet implemented :(')
