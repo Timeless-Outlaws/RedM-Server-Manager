@@ -29,7 +29,7 @@ export default class ResourcesInstall extends Command {
 
     /* Check if we are supposed to install a resource, otherwise just install */
     if (args.resource || args.path) {
-      if (! args.resource || ! args.path) {
+      if (!args.resource || !args.path) {
         throw new Error('When installing resources the resource AND path has to be provided.')
       }
 
