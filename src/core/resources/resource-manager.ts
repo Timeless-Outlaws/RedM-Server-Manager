@@ -1,10 +1,14 @@
-import {resolve} from 'node:path'
-import {writeFile, rm, readdir, mkdir} from 'node:fs/promises'
+import {basename, dirname, join, resolve, sep} from 'node:path'
+import {writeFile, rm, readdir, mkdir, rename, mkdtemp} from 'node:fs/promises'
+import { tmpdir } from 'os'
 import {Dirent, existsSync, readFileSync} from 'node:fs'
 import simpleGit, {SimpleGit, ConfigGetResult} from 'simple-git'
 import fetch, {Response} from 'node-fetch'
 import { extract as extractTar } from 'tar'
 import isGitUrl from 'is-git-url'
+import _glob from 'glob'
+import { promisify } from "util";
+const glob = promisify(_glob)
 import {Definition, Resource, ResourceType} from './definition'
 
 export default class ResourceManager {
@@ -188,6 +192,10 @@ export default class ResourceManager {
       throw new Error('Resources of type tarball must define a url property.')
     }
 
+    if (!await ResourceManager.urlIsTarball(resource.url)) {
+      throw new Error('Resource url is not a tarball.')
+    }
+
     /* Resolve the resources path */
     const path: string = resolve(this._resourcesDirectory, resource.path)
 
@@ -196,8 +204,6 @@ export default class ResourceManager {
       /* Remove it */
       await rm(path, {recursive: true, force: true})
     }
-
-    await mkdir(path)
 
     /* Download the latest tarball */
     const response = await fetch(resource.url)
@@ -298,17 +304,45 @@ export default class ResourceManager {
   }
 
   static async _extractTarball(tarball: NodeJS.ReadableStream, path: string): Promise<void> {
-    if (! existsSync(path)) {
-      throw new Error('Path must exist for tarball to extract!')
+    /* Make sure the path does exist */
+    if (existsSync(path)) {
+      throw new Error('Path must NOT already exist for tarball to extract!')
     }
 
+    /* Create a tmp directory to extract to */
+    const tmpDir: string = await mkdtemp(join(tmpdir(), tmpdir().charAt(tmpdir().length - 1) !== sep ? sep : ''))
+
+    /* Extract the tarball */
     await (new Promise((resolve, reject) => {
       tarball.on('end', resolve)
       tarball.on('error', reject)
 
       tarball.pipe(extractTar({
-        cwd: path,
+        cwd: tmpDir,
       }))
     }))
+
+    /* Get all manifest paths for booth manifest file styles */
+    const globOptions: _glob.IOptions = {
+      cwd: tmpDir
+    }
+
+    const paths: string[] = [
+      ... await glob('**/fxmanifest.lua', globOptions),
+      ... await glob('**/__resource.lua', globOptions)
+    ]
+
+    /* Sort manifest paths by length and get the one closest to root level */
+    const resourceManifest: string|undefined = paths.sort((left: string, right: string) => {
+      return left.split('/').length - right.split('/').length
+    }).shift()
+
+    /* Make sure we have a resource manifest as all resources need one */
+    if (!resourceManifest) {
+      throw new Error('Extracted resource does not include a manifest.')
+    }
+
+    /* Move the directory containing the resources manifest to the resource directory */
+    await rename(resolve(tmpDir, dirname(resourceManifest)), path)
   }
 }
