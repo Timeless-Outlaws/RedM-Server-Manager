@@ -283,7 +283,8 @@ export default class ResourceManager {
       redirect: 'follow'
     })
 
-    return response.headers.get('content-type') === 'application/gzip'
+    /* Check that the URL returns a gzip Content-Type header, also allow experimental x- version */
+    return ['application/gzip', 'application/x-gzip'].includes(response.headers.get('content-type'))
   }
 
   static async _getSubDirectories(path: string): Promise<string[]> {
