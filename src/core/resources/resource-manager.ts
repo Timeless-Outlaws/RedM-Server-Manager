@@ -2,7 +2,7 @@ import {resolve} from 'node:path'
 import {writeFile, rm, readdir, mkdir} from 'node:fs/promises'
 import {Dirent, existsSync, readFileSync} from 'node:fs'
 import simpleGit, {SimpleGit, ConfigGetResult} from 'simple-git'
-import { fetch, Response} from 'node-fetch'
+import fetch, {Response} from 'node-fetch'
 import {Extract as exractTar} from 'tar'
 import isGitUrl from 'is-git-url'
 import {Definition, Resource, ResourceType} from './definition'
@@ -272,7 +272,7 @@ export default class ResourceManager {
     if (input.startsWith('http') && await ResourceManager.urlIsTarball(input)) {
       return ResourceType.TARBALL
     }
-    
+
     /* Input not supported, fail */
     throw new Error(`Could not determine type for input "${input}".`)
   }
