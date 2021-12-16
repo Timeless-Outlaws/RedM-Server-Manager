@@ -29,7 +29,7 @@ describe('resources install and remove', () => {
   test
   .stdout()
   .command(['resources:install', 'https://github.com/Timeless-Outlaws/fxmigrant.git', 'fxmigrant', `--cwd=${cwd}`])
-  .it('can add resources to the definition', () => {
+  .it('can add resources from git', () => {
     const files = readdirSync(resolve(cwd, 'resources'))
 
     /* Check if all sql files got extracted */
@@ -46,6 +46,42 @@ describe('resources install and remove', () => {
 
     /* Check if all sql files got extracted */
     expect(files).to.lengthOf(1)
+    expect(files).to.contain('fxmigrant')
+  })
+
+  test
+  .stdout()
+  .command(['resources:install', 'https://github.com/bumbummen99/pNotify/tarball/master', 'pNotify', `--cwd=${cwd}`])
+  .it('can add resources from tarballs', () => {
+    const files = readdirSync(resolve(cwd, 'resources'))
+
+    /* Check if all sql files got extracted */
+    expect(files).to.lengthOf(2)
+    expect(files).to.contain('pNotify')
+    expect(files).to.contain('fxmigrant')
+  })
+
+  test
+  .stdout()
+  .command(['resources:install', 'https://definitely.not/a/git/repo', 'doesnotmatter', `--cwd=${cwd}`])
+  .it('Does not install nonsense URLs', () => {
+    const files = readdirSync(resolve(cwd, 'resources'))
+
+    /* Check if all sql files got extracted */
+    expect(files).to.lengthOf(2)
+    expect(files).to.contain('pNotify')
+    expect(files).to.contain('fxmigrant')
+  })
+
+  test
+  .stdout()
+  .command(['resources:install', 'https://definitely.not/a/git/repo', 'doesnotmatter', `--cwd=${cwd}`])
+  .it('Does not install nonsense URLs', () => {
+    const files = readdirSync(resolve(cwd, 'resources'))
+
+    /* Check if all sql files got extracted */
+    expect(files).to.lengthOf(2)
+    expect(files).to.contain('pNotify')
     expect(files).to.contain('fxmigrant')
   })
 })

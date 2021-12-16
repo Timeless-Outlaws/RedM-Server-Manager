@@ -262,19 +262,28 @@ export default class ResourceManager {
     await writeFile(this._definitionFile, json)
   }
 
-  static getResourceTypeFromInput(input: string): ResourceType {
+  static async getResourceTypeFromInput(input: string): Promise<ResourceType> {
     /* Check if the input is a GIT url */
     if (isGitUrl(input)) {
       return ResourceType.GIT
     }
 
     /* Check if the input is a tarball */
-    if (input.endsWith('.tar.gz')) {
+    if (input.startsWith('http') && await ResourceManager.urlIsTarball(input)) {
       return ResourceType.TARBALL
     }
     /* Input not supported, fail */
 
     throw new Error(`Could not determine type for input "${input}".`)
+  }
+
+  static async urlIsTarball(url: string): Promise<boolean> {
+    const response = await fetch(url, {
+      method: 'HEAD',
+      redirect: 'follow'
+    })
+
+    return response.headers.get('content-type') === 'application/gzip'
   }
 
   static async _getSubDirectories(path: string): Promise<string[]> {

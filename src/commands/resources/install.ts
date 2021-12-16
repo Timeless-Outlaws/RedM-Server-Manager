@@ -39,7 +39,7 @@ export default class ResourcesInstall extends Command {
       }
 
       /* Get the type of resource to install, will fail if the resource type can not be determined */
-      const resourceType: ResourceType = ResourceManager.getResourceTypeFromInput(args.resource)
+      const resourceType: ResourceType = await ResourceManager.getResourceTypeFromInput(args.resource)
 
       /* Add the resource to the definition, this will also install the resource and revert the definition on success */
       await manager.addResource({
