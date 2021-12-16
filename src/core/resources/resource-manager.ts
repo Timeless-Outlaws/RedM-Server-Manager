@@ -2,7 +2,7 @@ import {resolve} from 'node:path'
 import {writeFile, rm, readdir, mkdir} from 'node:fs/promises'
 import {Dirent, existsSync, readFileSync} from 'node:fs'
 import simpleGit, {SimpleGit, ConfigGetResult} from 'simple-git'
-import fetch from 'node-fetch'
+import { fetch, Response} from 'node-fetch'
 import {Extract as exractTar} from 'tar'
 import isGitUrl from 'is-git-url'
 import {Definition, Resource, ResourceType} from './definition'
@@ -272,19 +272,22 @@ export default class ResourceManager {
     if (input.startsWith('http') && await ResourceManager.urlIsTarball(input)) {
       return ResourceType.TARBALL
     }
+    
     /* Input not supported, fail */
-
     throw new Error(`Could not determine type for input "${input}".`)
   }
 
   static async urlIsTarball(url: string): Promise<boolean> {
-    const response = await fetch(url, {
+    const response: Response = await fetch(url, {
       method: 'HEAD',
       redirect: 'follow'
     })
 
+    /* Get the received Content-Type header from the request */
+    const contentType: string|null = response.headers.get('content-type')
+
     /* Check that the URL returns a gzip Content-Type header, also allow experimental x- version */
-    return ['application/gzip', 'application/x-gzip'].includes(response.headers.get('content-type'))
+    return !!contentType && ['application/gzip', 'application/x-gzip'].includes(contentType)
   }
 
   static async _getSubDirectories(path: string): Promise<string[]> {
