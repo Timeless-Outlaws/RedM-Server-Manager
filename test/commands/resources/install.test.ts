@@ -72,16 +72,4 @@ describe('resources install and remove', () => {
     expect(files).to.contain('pNotify')
     expect(files).to.contain('fxmigrant')
   })
-
-  test
-  .stdout()
-  .command(['resources:install', 'https://definitely.not/a/git/repo', 'doesnotmatter', `--cwd=${cwd}`])
-  .it('Does not install nonsense URLs', () => {
-    const files = readdirSync(resolve(cwd, 'resources'))
-
-    /* Check if all sql files got extracted */
-    expect(files).to.lengthOf(2)
-    expect(files).to.contain('pNotify')
-    expect(files).to.contain('fxmigrant')
-  })
 })
