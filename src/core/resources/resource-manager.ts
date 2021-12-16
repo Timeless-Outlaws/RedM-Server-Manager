@@ -194,8 +194,10 @@ export default class ResourceManager {
     /* Check if the resource directory does already exist */
     if (existsSync(path)) {
       /* Remove it */
-      rm(path, {recursive: true, force: true})
+      await rm(path, {recursive: true, force: true})
     }
+
+    await mkdir(path)
 
     /* Download the latest tarball */
     const response = await fetch(resource.url)
@@ -301,7 +303,7 @@ export default class ResourceManager {
       tarball.on('error', reject)
 
       tarball.pipe(exractTar({
-        C: path,
+        cwd: path,
       }))
     }))
   }
