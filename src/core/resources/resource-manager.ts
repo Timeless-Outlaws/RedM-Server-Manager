@@ -3,7 +3,7 @@ import {writeFile, rm, readdir, mkdir} from 'node:fs/promises'
 import {Dirent, existsSync, readFileSync} from 'node:fs'
 import simpleGit, {SimpleGit, ConfigGetResult} from 'simple-git'
 import fetch, {Response} from 'node-fetch'
-import {Extract as exractTar} from 'tar'
+import { extract as extractTar } from 'tar'
 import isGitUrl from 'is-git-url'
 import {Definition, Resource, ResourceType} from './definition'
 
@@ -306,7 +306,7 @@ export default class ResourceManager {
       tarball.on('end', resolve)
       tarball.on('error', reject)
 
-      tarball.pipe(exractTar({
+      tarball.pipe(extractTar({
         cwd: path,
       }))
     }))
