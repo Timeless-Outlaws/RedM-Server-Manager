@@ -297,8 +297,12 @@ export default class ResourceManager {
     return subdirectories.filter((dirent: Dirent) => dirent.isDirectory()).map((dirent: Dirent) => dirent.name)
   }
 
-  static _extractTarball(tarball: NodeJS.ReadableStream, path: string): Promise<void> {
-    return (new Promise((resolve, reject) => {
+  static async _extractTarball(tarball: NodeJS.ReadableStream, path: string): Promise<void> {
+    if (! existsSync(path)) {
+      throw new Error('Path must exist for tarball to extract!')
+    }
+
+    await (new Promise((resolve, reject) => {
       tarball.on('end', resolve)
       tarball.on('error', reject)
 
