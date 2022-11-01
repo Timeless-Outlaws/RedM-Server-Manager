@@ -8,7 +8,7 @@
   },
   "bugs": "https://github.com/bumbummen99/RedM/issues",
   "dependencies": {
-    "@oclif/command": "^1.8.16",
+    "@oclif/command": "^1.8.19",
     "@oclif/core": "^1",
     "@oclif/plugin-help": "^5",
     "@types/glob": "^7.2.0",
